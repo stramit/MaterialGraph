@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
+
 namespace UnityEditor.MaterialGraph
 {
     public class MaterialGraph : ScriptableObject
