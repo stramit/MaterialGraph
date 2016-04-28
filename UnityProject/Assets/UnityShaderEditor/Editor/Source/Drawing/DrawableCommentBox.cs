@@ -37,7 +37,6 @@ namespace UnityEditor.MaterialGraph
             m_CommentBox.m_Rect.y      = translation.y;
             m_CommentBox.m_Rect.width  = scale.x;
             m_CommentBox.m_Rect.height = scale.y;
-            EditorUtility.SetDirty(m_CommentBox);
         }
 
     }
