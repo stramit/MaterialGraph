@@ -110,8 +110,9 @@ namespace UnityEditor.MaterialGraph
         private class AddCommentCreationObject : object
         {
             public Vector2 m_Pos;
+            public string m_Label;
 
-            public AddCommentCreationObject(Vector2 p) { m_Pos = p; }
+            public AddCommentCreationObject(Vector2 pos, string label) { m_Pos = pos; m_Label = label; }
         };
 
         private void AddComment(object obj)
@@ -120,8 +121,8 @@ namespace UnityEditor.MaterialGraph
             if (posObj == null)
                 return;
 
-            Rect commentPosition = new Rect(posObj.m_Pos.x, posObj.m_Pos.y, 100.0f, 100.0f);
-            m_MaterialGraph.currentGraph.AddCommentBox(commentPosition);
+            Rect commentBoxRect = new Rect(posObj.m_Pos.x, posObj.m_Pos.y, 100.0f, 100.0f);
+            m_MaterialGraph.currentGraph.AddCommentBox(commentBoxRect, posObj.m_Label);
 
             Rebuild();
             Repaint();
@@ -144,7 +145,7 @@ namespace UnityEditor.MaterialGraph
             }
 
             // Add a comment box for grouping nodes
-            gm.AddItem(new GUIContent("Comment Box"), false, AddComment, new AddCommentCreationObject(parent.MouseToCanvas(@event.mousePosition)));
+            gm.AddItem(new GUIContent("Comment Box"), false, AddComment, new AddCommentCreationObject(parent.MouseToCanvas(@event.mousePosition), "CommentBox"));
 
             gm.ShowAsContext();
             return true;

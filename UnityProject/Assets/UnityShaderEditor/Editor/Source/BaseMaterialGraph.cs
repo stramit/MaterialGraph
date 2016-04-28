@@ -5,12 +5,23 @@ using System.Collections.Generic;
 
 namespace UnityEditor.MaterialGraph
 {
+
+    public class CommentBox
+    {
+        public Rect m_Rect;
+        public string m_Label;
+        public CommentBox(Rect rect, string label)
+        {
+            m_Rect = rect;
+            m_Label = label;
+        }
+    }
+
     public abstract class BaseMaterialGraph : Graph
     {
-
         [SerializeField]
-        List<Rect> m_CommentBoxes = new List<Rect>();
-        public List<Rect> commentBoxes
+        private List<CommentBox> m_CommentBoxes = new List<CommentBox>();
+        public List<CommentBox> commentBoxes
         {
             get
             {
@@ -121,9 +132,9 @@ namespace UnityEditor.MaterialGraph
             RevalidateGraph();
         }
 
-        public void AddCommentBox(Rect r)
+        public void AddCommentBox(Rect box, string label)
         {
-            m_CommentBoxes.Add(r);
+            m_CommentBoxes.Add(new CommentBox(box, label));
         }
 
         public void AddNodeNoValidate(Node node)

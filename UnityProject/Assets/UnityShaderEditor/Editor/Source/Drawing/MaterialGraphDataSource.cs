@@ -83,11 +83,12 @@ namespace UnityEditor.MaterialGraph
             }
 
             // Add comment boxes
-            var commentBoxes = new List<CommentBox>();
+            var commentBoxes = new List<DrawableCommentBox>();
             Debug.Log(pixelGraph.commentBoxes);
-            foreach (var commentBoxRect in pixelGraph.commentBoxes)
+            foreach (var commentBox in pixelGraph.commentBoxes)
             {
-                CommentBox toAdd = new CommentBox(new Vector2(commentBoxRect.x, commentBoxRect.y), 100.0f);
+                Debug.Log("Adding box with rect: " + commentBox.m_Rect);
+                DrawableCommentBox toAdd = new DrawableCommentBox( commentBox.m_Rect, commentBox.m_Label );
                 toAdd.zIndex = highestZIndex + 1;
                 commentBoxes.Add(toAdd);
             }
