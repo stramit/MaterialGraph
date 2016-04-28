@@ -66,18 +66,32 @@ namespace UnityEditor.MaterialGraph
                 }
             }
 
+            var toReturn = new List<CanvasElement>();
+            toReturn.AddRange(m_DrawableNodes.Select(x => (CanvasElement)x));
+            toReturn.AddRange(drawableEdges.Select(x => (CanvasElement)x));
+            toReturn.AddRange(nullInputSlots.Select(x => (CanvasElement)x));
+
+            // find the lowest z-index
+            // and make all comment boxes have indexes lower than that.
+            int highestZIndex = int.MinValue;
+            foreach ( CanvasElement e in toReturn )
+            {
+                if ( e.zIndex > highestZIndex )
+                {
+                    highestZIndex = e.zIndex;
+                }
+            }
+
             // Add comment boxes
             var commentBoxes = new List<CommentBox>();
             Debug.Log(pixelGraph.commentBoxes);
             foreach (var commentBoxRect in pixelGraph.commentBoxes)
             {
-                commentBoxes.Add(new CommentBox( new Vector2(commentBoxRect.x, commentBoxRect.y), 100.0f ));
+                CommentBox toAdd = new CommentBox(new Vector2(commentBoxRect.x, commentBoxRect.y), 100.0f);
+                toAdd.zIndex = highestZIndex + 1;
+                commentBoxes.Add(toAdd);
             }
 
-            var toReturn = new List<CanvasElement>();
-            toReturn.AddRange(m_DrawableNodes.Select(x => (CanvasElement)x));
-            toReturn.AddRange(drawableEdges.Select(x => (CanvasElement)x));
-            toReturn.AddRange(nullInputSlots.Select(x => (CanvasElement)x));
             toReturn.AddRange(commentBoxes.Select(x => (CanvasElement)x));
 
             //toReturn.Add(new FloatingPreview(new Rect(Screen.width - 300, Screen.height - 300, 300, 300), pixelGraph.nodes.FirstOrDefault(x => x is PixelShaderNode)));
