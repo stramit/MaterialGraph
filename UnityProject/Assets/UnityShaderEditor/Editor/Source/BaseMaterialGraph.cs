@@ -6,10 +6,14 @@ using System.Collections.Generic;
 namespace UnityEditor.MaterialGraph
 {
 
-    public class CommentBox
+    public class CommentBox : ScriptableObject
     {
-        public Rect m_Rect;
-        public string m_Label;
+        [SerializeField]
+        public Rect m_Rect = new Rect();
+
+        [SerializeField]
+        public string m_Label = "";
+
         public CommentBox(Rect rect, string label)
         {
             m_Rect = rect;
