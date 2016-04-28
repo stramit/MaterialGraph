@@ -107,6 +107,26 @@ namespace UnityEditor.MaterialGraph
             Repaint();
         }
 
+        private class AddCommentCreationObject : object
+        {
+            public Vector2 m_Pos;
+
+            public AddCommentCreationObject(Vector2 p) { m_Pos = p; }
+        };
+
+        private void AddComment(object obj)
+        {
+            var posObj = obj as AddCommentCreationObject;
+            if (posObj == null)
+                return;
+
+            Rect commentPosition = new Rect(posObj.m_Pos.x, posObj.m_Pos.y, 100.0f, 100.0f);
+            m_MaterialGraph.currentGraph.AddCommentBox(commentPosition);
+
+            Rebuild();
+            Repaint();
+        }
+
         public virtual bool CanAddToNodeMenu(Type type) { return true; }
         protected bool DoAddNodeMenu(Event @event, Canvas2D parent, Object customData)
         {
@@ -122,6 +142,10 @@ namespace UnityEditor.MaterialGraph
                     }
                 }
             }
+
+            // Add a comment box for grouping nodes
+            gm.AddItem(new GUIContent("Comment Box"), false, AddComment, new AddCommentCreationObject(parent.MouseToCanvas(@event.mousePosition)));
+
             gm.ShowAsContext();
             return true;
         }

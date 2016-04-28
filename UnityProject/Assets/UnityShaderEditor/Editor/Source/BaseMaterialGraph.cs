@@ -1,11 +1,23 @@
 using System.Linq;
 using UnityEditor.Graphs;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace UnityEditor.MaterialGraph
 {
     public abstract class BaseMaterialGraph : Graph
     {
+
+        [SerializeField]
+        List<Rect> m_CommentBoxes = new List<Rect>();
+        public List<Rect> commentBoxes
+        {
+            get
+            {
+                return m_CommentBoxes;
+            }
+        }
+
         private PreviewRenderUtility m_PreviewUtility;
 
         public PreviewRenderUtility previewUtility
@@ -107,6 +119,11 @@ namespace UnityEditor.MaterialGraph
             base.AddNode(node);
             AssetDatabase.AddObjectToAsset(node, this);
             RevalidateGraph();
+        }
+
+        public void AddCommentBox(Rect r)
+        {
+            m_CommentBoxes.Add(r);
         }
 
         public void AddNodeNoValidate(Node node)

@@ -65,11 +65,21 @@ namespace UnityEditor.MaterialGraph
                     nullInputSlots.Add(new NullInputProxy(slot, sourceAnchor));
                 }
             }
+
+            // Add comment boxes
+            var commentBoxes = new List<CommentBox>();
+            Debug.Log(pixelGraph.commentBoxes);
+            foreach (var commentBoxRect in pixelGraph.commentBoxes)
+            {
+                commentBoxes.Add(new CommentBox( new Vector2(commentBoxRect.x, commentBoxRect.y), 100.0f ));
+            }
+
             var toReturn = new List<CanvasElement>();
             toReturn.AddRange(m_DrawableNodes.Select(x => (CanvasElement)x));
             toReturn.AddRange(drawableEdges.Select(x => (CanvasElement)x));
             toReturn.AddRange(nullInputSlots.Select(x => (CanvasElement)x));
-            
+            toReturn.AddRange(commentBoxes.Select(x => (CanvasElement)x));
+
             //toReturn.Add(new FloatingPreview(new Rect(Screen.width - 300, Screen.height - 300, 300, 300), pixelGraph.nodes.FirstOrDefault(x => x is PixelShaderNode)));
 
             Debug.LogFormat("Returning {0} nodes", toReturn.Count);
