@@ -49,6 +49,11 @@ namespace UnityEditor.MaterialGraph
         {
             get { return isAwake && nodes.Any(x => x is IRequiresTime); }
         }
+
+        public void RemoveCommentBox(CommentBox commentBox)
+        {
+            m_CommentBoxes.Remove(commentBox);
+        }
         
         public override void RemoveEdge(Edge e)
         {

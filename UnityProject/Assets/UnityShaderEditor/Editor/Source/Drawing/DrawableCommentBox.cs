@@ -7,12 +7,16 @@ namespace UnityEditor.MaterialGraph
     {
         protected string m_Title = "CommentBox";
 
-        public DrawableCommentBox(Rect box, string title)
+        public CommentBox m_CommentBox;
+
+        public DrawableCommentBox(CommentBox box)
         {
-            translation = new Vector2(box.x, box.y);
-            scale = new Vector2(box.width, box.height);
+            translation = new Vector2(box.m_Rect.x, box.m_Rect.y);
+            scale = new Vector2(box.m_Rect.width, box.m_Rect.height);
             AddManipulator(new Draggable());
             AddManipulator(new Resizable());
+
+            m_CommentBox = box;
         }
 
         public override void Render(Rect parentRect, Canvas2D canvas)

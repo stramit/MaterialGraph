@@ -87,8 +87,7 @@ namespace UnityEditor.MaterialGraph
             Debug.Log(pixelGraph.commentBoxes);
             foreach (var commentBox in pixelGraph.commentBoxes)
             {
-                Debug.Log("Adding box with rect: " + commentBox.m_Rect);
-                DrawableCommentBox toAdd = new DrawableCommentBox( commentBox.m_Rect, commentBox.m_Label );
+                DrawableCommentBox toAdd = new DrawableCommentBox( commentBox );
                 toAdd.zIndex = highestZIndex + 1;
                 commentBoxes.Add(toAdd);
             }
@@ -148,6 +147,15 @@ namespace UnityEditor.MaterialGraph
                 Debug.Log("Deleting node " + e + " " + node);
                 graph.currentGraph.RemoveNode(node);
             }
+
+            // now delete commentboxes
+            foreach (var e in elements.Where(x => x is DrawableCommentBox))
+            {
+                var commentBox = (DrawableCommentBox)e;
+                Debug.Log("Deleting commentBox " + commentBox);
+                graph.currentGraph.RemoveCommentBox(commentBox.m_CommentBox);
+            }
+
             graph.currentGraph.RevalidateGraph();
         }
 
