@@ -121,7 +121,8 @@ namespace UnityEditor.MaterialGraph
             if (posObj == null)
                 return;
 
-            Rect commentBoxRect = new Rect(posObj.m_Pos.x, posObj.m_Pos.y, 100.0f, 100.0f);
+            Rect commentBoxRect = new Rect(posObj.m_Pos.x, posObj.m_Pos.y, 400f, 400.0f);
+
             m_MaterialGraph.currentGraph.AddCommentBox(commentBoxRect, posObj.m_Label);
 
             Rebuild();

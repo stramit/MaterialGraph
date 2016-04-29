@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.Experimental;
+using UnityEditorInternal.Experimental;
 using UnityEditor.Experimental.Graph;
 using UnityEditor.Graphs;
 using UnityEngine;
@@ -83,6 +84,7 @@ namespace UnityEditor.MaterialGraph
             }
 
             // Add comment boxes
+            DrawableCommentBox.registerCommentBoxMoveEvent(CommentBoxMoved);
             var commentBoxes = new List<DrawableCommentBox>();
             Debug.Log(pixelGraph.commentBoxes);
             foreach (var commentBox in pixelGraph.commentBoxes)
@@ -152,11 +154,27 @@ namespace UnityEditor.MaterialGraph
             foreach (var e in elements.Where(x => x is DrawableCommentBox))
             {
                 var commentBox = (DrawableCommentBox)e;
-                Debug.Log("Deleting commentBox " + commentBox);
+                Debug.Log("Deleting comment box " + commentBox);
                 graph.currentGraph.RemoveCommentBox(commentBox.m_CommentBox);
             }
 
             graph.currentGraph.RevalidateGraph();
+        }
+
+        // For detecting movement of commentboxes
+        private void CommentBoxMoved(DrawableCommentBox commentbox, Vector2 motion)
+        {
+            foreach (var node in m_DrawableNodes)
+            {
+                if ( RectUtils.Contains(commentbox.m_CommentBox.m_Rect, node.boundingRect) )
+                {
+                    Vector3 tx = node.translation;
+                    tx.x += motion.x;
+                    tx.y += motion.y;
+                    node.translation = tx;
+                    node.UpdateModel(UpdateType.Candidate);
+                }
+            }
         }
 
         public void Connect(NodeAnchor a, NodeAnchor b)
