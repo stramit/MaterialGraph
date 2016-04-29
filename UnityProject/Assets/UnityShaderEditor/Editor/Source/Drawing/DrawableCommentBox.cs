@@ -6,7 +6,7 @@ namespace UnityEditor.MaterialGraph
     public class DrawableCommentBox : CanvasElement
     {
 
-        public delegate void MovementEventHandler(DrawableCommentBox movedBox, Vector2 movement);
+        public delegate void MovementEventHandler(Rect movedBox, Vector2 movement);
 
         public static event MovementEventHandler onMove;
 
@@ -59,6 +59,7 @@ namespace UnityEditor.MaterialGraph
             base.UpdateModel(t);
 
             Vector2 oldTranslation = new Vector2(m_CommentBox.m_Rect.x, m_CommentBox.m_Rect.y);
+            Rect oldFrame = new Rect(m_CommentBox.m_Rect.x, m_CommentBox.m_Rect.y, m_CommentBox.m_Rect.width, m_CommentBox.m_Rect.height);
 
             m_CommentBox.m_Rect.x      = translation.x;
             m_CommentBox.m_Rect.y      = translation.y;
@@ -68,7 +69,7 @@ namespace UnityEditor.MaterialGraph
             Vector2 newTranslation = new Vector2(translation.x, translation.y);
 
             if (onMove != null)
-                onMove(this, (newTranslation - oldTranslation));
+                onMove(oldFrame, (newTranslation - oldTranslation));
         }
     }
     
