@@ -74,12 +74,12 @@ namespace UnityEditor.MaterialGraph
 
             // find the highest z-index
             // and make all comment boxes have indexes lower than that.
-            int highestZIndex = int.MinValue;
+            int lowestZIndex = int.MaxValue;
             foreach ( CanvasElement e in toReturn )
             {
-                if ( e.zIndex > highestZIndex )
+                if ( e.zIndex < lowestZIndex )
                 {
-                    highestZIndex = e.zIndex;
+                    lowestZIndex = e.zIndex;
                 }
             }
 
@@ -90,7 +90,7 @@ namespace UnityEditor.MaterialGraph
             foreach (var commentBox in pixelGraph.commentBoxes)
             {
                 DrawableCommentBox toAdd = new DrawableCommentBox(commentBox);
-                toAdd.zIndex = highestZIndex + 1;
+                toAdd.zIndex = lowestZIndex - 1;
                 commentBoxes.Add(toAdd);
             }
 
