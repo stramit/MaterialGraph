@@ -11,7 +11,7 @@ namespace UnityEditor.MaterialGraph
 
         public override bool StartDrag(CanvasElement element, Event e, Canvas2D canvas)
         {
-            Debug.Log("Drag started");
+            Debug.Log("Dragging box");
             if (element is DrawableCommentBox)
             {
                 List<CanvasElement> nodesInsideBox = new List<CanvasElement>();
@@ -20,7 +20,19 @@ namespace UnityEditor.MaterialGraph
                 {
                     if (RectUtils.Contains(dbox.m_CommentBox.m_Rect, ce.boundingRect) && ce is DrawableMaterialNode)
                     {
-                        nodesInsideBox.Add(ce);
+                        if(RectUtils.Contains(canvas.MouseToCanvas(e.mousePosition), ce.boundingRect))
+                        {
+                            Debug.Log("Drag started in other node");
+                            dbox.UpdateContainedNodesList(new List<CanvasElement>());
+                            return base.StartDrag(ce, e, canvas);
+                            //if (!ce.selected)
+                            //    nodesInsideBox.Add(ce);
+                        }
+                        else
+                        {
+                            if (!ce.selected)
+                                nodesInsideBox.Add(ce);
+                        }
                     }
                 }
                 dbox.UpdateContainedNodesList(nodesInsideBox);
