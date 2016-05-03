@@ -63,8 +63,8 @@ namespace UnityEditor.MaterialGraph
 
         public override void Render(Rect parentRect, Canvas2D canvas)
         {
-            Color backgroundColor = new Color(0.0f, 0.0f, 0.0f, 1.0f);
-            Color selectedColor = new Color(0.0f, 0.7f, 1.0f, 1.0f);
+            Color backgroundColor = new Color(0.0f, 0.0f, 0.0f, 0.5f);
+            Color selectedColor = new Color(0.0f, 0.7f, 1.0f, 0.5f);
             EditorGUI.DrawRect(new Rect(0, 0, scale.x, scale.y), selected ? selectedColor : backgroundColor);
             GUI.Label(new Rect(0, 0, scale.x, 26f), GUIContent.none, new GUIStyle("preToolbar"));
             GUI.Label(new Rect(10, 2, scale.x - 20.0f, 16.0f), m_Title, EditorStyles.toolbarTextField);
@@ -75,6 +75,11 @@ namespace UnityEditor.MaterialGraph
         public void UpdateContainedNodesList(List<CanvasElement> elements)
         {
             containedNodes = elements;
+        }
+
+        public void ClearContainingNodesList()
+        {
+            containedNodes.Clear();
         }
 
         public override void UpdateModel(UpdateType t)

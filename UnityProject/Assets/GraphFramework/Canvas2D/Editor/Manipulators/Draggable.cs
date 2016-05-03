@@ -92,7 +92,7 @@ namespace UnityEditor.Experimental
             return dragRegion;
         }
 
-        private bool EndDrag(CanvasElement element, Event e, Canvas2D canvas)
+        public virtual bool EndDrag(CanvasElement element, Event e, Canvas2D canvas)
         {
             if (e.type == EventType.Used)
                 return false;

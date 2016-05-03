@@ -18,15 +18,14 @@ namespace UnityEditor.MaterialGraph
                 DrawableCommentBox dbox = (DrawableCommentBox)element;
                 foreach (var ce in canvas.elements)
                 {
-                    if (RectUtils.Contains(dbox.m_CommentBox.m_Rect, ce.boundingRect) && ce is DrawableMaterialNode)
+                    if (RectUtils.Contains(dbox.m_CommentBox.m_Rect, ce.boundingRect) && ce != dbox)
                     {
-                        if(RectUtils.Contains(canvas.MouseToCanvas(e.mousePosition), ce.boundingRect))
+                        if (RectUtils.Contains(canvas.MouseToCanvas(e.mousePosition), ce.boundingRect))
                         {
-                            Debug.Log("Drag started in other node");
+                            //Debug.Log("Drag started in other node");
                             dbox.UpdateContainedNodesList(new List<CanvasElement>());
-                            return base.StartDrag(ce, e, canvas);
-                            //if (!ce.selected)
-                            //    nodesInsideBox.Add(ce);
+                            //e.Use();
+                            return false;
                         }
                         else
                         {
@@ -38,6 +37,16 @@ namespace UnityEditor.MaterialGraph
                 dbox.UpdateContainedNodesList(nodesInsideBox);
             }
             return base.StartDrag(element, e, canvas);
+        }
+
+        public override bool EndDrag(CanvasElement element, Event e, Canvas2D canvas)
+        {
+            if (element is DrawableCommentBox)
+            {
+                DrawableCommentBox dbox = (DrawableCommentBox)element;
+                dbox.ClearContainingNodesList();
+            }
+            return base.EndDrag(element, e, canvas);
         }
 
 
