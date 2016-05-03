@@ -5,6 +5,21 @@ namespace UnityEditorInternal.Experimental
 {
     internal class RectUtils
     {
+        public static bool Contains(Vector2 p, Rect r)
+        {
+            if (p.x < r.xMin)
+                return false;
+            if (p.x > r.xMax)
+                return false;
+
+            if (p.y < r.yMin)
+                return false;
+            if (p.y > r.yMax)
+                return false;
+
+            return true;
+        }
+
         public static bool Contains(Rect a, Rect b)
         {
             if (a.xMin > b.xMin)
