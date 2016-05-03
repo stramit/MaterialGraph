@@ -1,12 +1,13 @@
 ﻿using UnityEditor.Experimental;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace UnityEditor.MaterialGraph
 {
     public class DrawableCommentBox : CanvasElement
     {
 
-        public delegate void MovementEventHandler(Rect movedBox, Vector2 movement);
+        public delegate void MovementEventHandler(List<CanvasElement> elements, Vector2 movement);
 
         public static event MovementEventHandler onMove;
 
@@ -33,11 +34,28 @@ namespace UnityEditor.MaterialGraph
 
         public CommentBox m_CommentBox;
 
+        private List<CanvasElement> m_ContainedNodes;
+        public List<CanvasElement> containedNodes
+        {
+            get
+            {
+                if (m_ContainedNodes == null)
+                {
+                    m_ContainedNodes = new List<CanvasElement>();
+                }
+                return m_ContainedNodes;
+            }
+            set
+            {
+                m_ContainedNodes = value;
+            }
+        }
+
         public DrawableCommentBox(CommentBox box)
         {
             translation = new Vector2(box.m_Rect.x, box.m_Rect.y);
             scale = new Vector2(box.m_Rect.width, box.m_Rect.height);
-            AddManipulator(new Draggable());
+            AddManipulator(new DraggableCommentBox());
             AddManipulator(new Resizable());
 
             m_CommentBox = box;
@@ -52,6 +70,11 @@ namespace UnityEditor.MaterialGraph
             GUI.Label(new Rect(10, 2, scale.x - 20.0f, 16.0f), m_Title, EditorStyles.toolbarTextField);
 
             base.Render(parentRect, canvas);
+        }
+
+        public void UpdateContainedNodesList(List<CanvasElement> elements)
+        {
+            containedNodes = elements;
         }
 
         public override void UpdateModel(UpdateType t)
@@ -69,7 +92,7 @@ namespace UnityEditor.MaterialGraph
             Vector2 newTranslation = new Vector2(translation.x, translation.y);
 
             if (onMove != null)
-                onMove(oldFrame, (newTranslation - oldTranslation));
+                onMove(containedNodes, (newTranslation - oldTranslation));
         }
     }
     

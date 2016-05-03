@@ -162,19 +162,15 @@ namespace UnityEditor.MaterialGraph
         }
 
         // For detecting movement of commentboxes
-        private void CommentBoxMoved(Rect boundingFrame, Vector2 motion)
+        private void CommentBoxMoved(List<CanvasElement> elements, Vector2 motion)
         {
-            //Debug.Log("commentbox moved triggered");
-            foreach (var node in m_DrawableNodes)
+            foreach (var e in elements)
             {
-                if ( RectUtils.Contains(boundingFrame, node.boundingRect) )
-                {
-                    Vector3 tx = node.translation;
-                    tx.x += motion.x;
-                    tx.y += motion.y;
-                    node.translation = tx;
-                    node.UpdateModel(UpdateType.Candidate);
-                }
+                Vector3 tx = e.translation;
+                tx.x += motion.x;
+                tx.y += motion.y;
+                e.translation = tx;
+                e.UpdateModel(UpdateType.Candidate);
             }
         }
 

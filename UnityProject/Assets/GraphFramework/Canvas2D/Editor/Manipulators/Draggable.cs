@@ -46,7 +46,7 @@ namespace UnityEditor.Experimental
             element.MouseDown += StartDrag;
         }
 
-        private bool StartDrag(CanvasElement element, Event e, Canvas2D canvas)
+        public virtual bool StartDrag(CanvasElement element, Event e, Canvas2D canvas)
         {
             if (e.type == EventType.Used)
                 return false;
