@@ -11,10 +11,14 @@ namespace UnityEditor.MaterialGraph
 
         // If on, nodes are only dragged with the box if commenbox surrounds them fully
         // If off, nodes are dragged with the commentbox even if they only partially intersect the commentbox
-        private const bool strictEncompass = true;
+        private const bool strictEncompass = false;
+
+        private Vector2 lastMouse;
 
         public override bool StartDrag(CanvasElement element, Event e, Canvas2D canvas)
         {
+            Debug.Log("Start drag");
+            lastMouse = e.mousePosition;
             bool doStartDrag = true;
             if (element is DrawableCommentBox)
             {
@@ -28,7 +32,17 @@ namespace UnityEditor.MaterialGraph
                         continue;
                     }
 
-                    Debug.Log("ZIndex of node " + ce.zIndex);
+                    // Check if the commentbox is samller, if so, include it
+                    if (ce is DrawableCommentBox)
+                    {
+                        Rect otherRect = ((DrawableCommentBox)ce).m_CommentBox.m_Rect;
+                        Rect selfRect = dbox.m_CommentBox.m_Rect;
+                        //if (selfRect.width * selfRect.height <= otherRect.width * otherRect.width)
+                        if (!RectUtils.Contains(selfRect, otherRect))
+                        {
+                            continue;
+                        }
+                    }
 
                     if (RectUtils.Contains(dbox.boundingRect, ce.boundingRect) || !strictEncompass)
                     {
@@ -36,7 +50,7 @@ namespace UnityEditor.MaterialGraph
                         {
                             doStartDrag = false;
                         }
-                        nodesInsideBox.Add(ce);
+                        else nodesInsideBox.Add(ce);
                     }
                 }
                 dbox.UpdateContainedNodesList(nodesInsideBox);
@@ -49,10 +63,16 @@ namespace UnityEditor.MaterialGraph
         {
             if (element is DrawableCommentBox)
             {
+                Debug.Log("Clearing eleemnt list");
                 DrawableCommentBox dbox = (DrawableCommentBox)element;
                 dbox.ClearContainingNodesList();
             }
-            return base.EndDrag(element, e, canvas);
+            bool toreturn = base.EndDrag(element, e, canvas);
+            if ( lastMouse != e.mousePosition )
+            {
+                canvas.ClearSelection();
+            }
+            return toreturn;
         }
 
 

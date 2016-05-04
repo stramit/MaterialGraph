@@ -166,7 +166,6 @@ namespace UnityEditor.MaterialGraph
         {
             foreach (var e in elements)
             {
-
                 // ommit already selected nodes
                 if (!e.selected)
                 {
