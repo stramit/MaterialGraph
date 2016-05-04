@@ -166,11 +166,16 @@ namespace UnityEditor.MaterialGraph
         {
             foreach (var e in elements)
             {
-                Vector3 tx = e.translation;
-                tx.x += motion.x;
-                tx.y += motion.y;
-                e.translation = tx;
-                e.UpdateModel(UpdateType.Candidate);
+
+                // ommit already selected nodes
+                if (!e.selected)
+                {
+                    Vector3 tx = e.translation;
+                    tx.x += motion.x;
+                    tx.y += motion.y;
+                    e.translation = tx;
+                    e.UpdateModel(UpdateType.Candidate);
+                }
             }
         }
 

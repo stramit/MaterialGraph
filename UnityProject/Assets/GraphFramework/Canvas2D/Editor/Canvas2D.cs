@@ -670,6 +670,11 @@ namespace UnityEditor.Experimental
             RebuildQuadTree();
         }
 
+        public List<CanvasElement> FindInRegion(Rect region)
+        {
+            return m_QuadTree.ContainedBy(region);
+        }
+
         public CanvasElement[] Pick<T>(Rect area)
         {
             List<CanvasElement> elems = m_QuadTree.ContainedBy(area);

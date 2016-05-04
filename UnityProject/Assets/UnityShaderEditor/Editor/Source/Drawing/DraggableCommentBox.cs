@@ -9,34 +9,40 @@ namespace UnityEditor.MaterialGraph
     internal class DraggableCommentBox : Draggable
     {
 
+        // If on, nodes are only dragged with the box if commenbox surrounds them fully
+        // If off, nodes are dragged with the commentbox even if they only partially intersect the commentbox
+        private const bool strictEncompass = true;
+
         public override bool StartDrag(CanvasElement element, Event e, Canvas2D canvas)
         {
-            Debug.Log("Dragging box");
+            bool doStartDrag = true;
             if (element is DrawableCommentBox)
             {
                 List<CanvasElement> nodesInsideBox = new List<CanvasElement>();
                 DrawableCommentBox dbox = (DrawableCommentBox)element;
-                foreach (var ce in canvas.elements)
+                List<CanvasElement> elementsInCoveredregion = canvas.FindInRegion(dbox.boundingRect);
+                foreach (var ce in elementsInCoveredregion)
                 {
-                    if (RectUtils.Contains(dbox.m_CommentBox.m_Rect, ce.boundingRect) && ce != dbox)
+                    if (ce == dbox)
+                    {
+                        continue;
+                    }
+
+                    Debug.Log("ZIndex of node " + ce.zIndex);
+
+                    if (RectUtils.Contains(dbox.boundingRect, ce.boundingRect) || !strictEncompass)
                     {
                         if (RectUtils.Contains(canvas.MouseToCanvas(e.mousePosition), ce.boundingRect))
                         {
-                            //Debug.Log("Drag started in other node");
-                            dbox.UpdateContainedNodesList(new List<CanvasElement>());
-                            //e.Use();
-                            return false;
+                            doStartDrag = false;
                         }
-                        else
-                        {
-                            if (!ce.selected)
-                                nodesInsideBox.Add(ce);
-                        }
+                        nodesInsideBox.Add(ce);
                     }
                 }
                 dbox.UpdateContainedNodesList(nodesInsideBox);
             }
-            return base.StartDrag(element, e, canvas);
+            if (doStartDrag) return base.StartDrag(element, e, canvas);
+            else return false;
         }
 
         public override bool EndDrag(CanvasElement element, Event e, Canvas2D canvas)
