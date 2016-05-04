@@ -17,7 +17,6 @@ namespace UnityEditor.MaterialGraph
 
         public override bool StartDrag(CanvasElement element, Event e, Canvas2D canvas)
         {
-            Debug.Log("Start drag");
             lastMouse = e.mousePosition;
             bool doStartDrag = true;
             if (element is DrawableCommentBox)
@@ -63,7 +62,6 @@ namespace UnityEditor.MaterialGraph
         {
             if (element is DrawableCommentBox)
             {
-                Debug.Log("Clearing eleemnt list");
                 DrawableCommentBox dbox = (DrawableCommentBox)element;
                 dbox.ClearContainingNodesList();
             }
