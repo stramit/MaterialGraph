@@ -58,6 +58,8 @@ namespace UnityEditor.MaterialGraph
             AddManipulator(new DraggableCommentBox());
             AddManipulator(new Resizable());
 
+            m_Title = box.m_Label;
+
             m_CommentBox = box;
         }
 
@@ -95,6 +97,15 @@ namespace UnityEditor.MaterialGraph
             m_CommentBox.m_Rect.height = scale.y;
 
             Vector2 newTranslation = new Vector2(translation.x, translation.y);
+
+            foreach(CanvasElement e in containedNodes)
+            {
+                if(e is DrawableCommentBox)
+                {
+                    DrawableCommentBox nestedBox = (DrawableCommentBox)e;
+                    nestedBox.ClearContainingNodesList();
+                }
+            }
 
             if (onMove != null)
                 onMove(containedNodes, (newTranslation - oldTranslation));
