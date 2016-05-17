@@ -1,6 +1,7 @@
 ﻿using UnityEditor.Experimental;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace UnityEditor.MaterialGraph
 {
@@ -31,6 +32,11 @@ namespace UnityEditor.MaterialGraph
         }
 
         protected string m_Title = "CommentBox";
+        public string title
+        {
+            get { return m_Title; }
+            set { m_Title = value; }
+        }
 
         public CommentBox m_CommentBox;
 
@@ -61,6 +67,7 @@ namespace UnityEditor.MaterialGraph
             m_Title = box.m_Label;
 
             m_CommentBox = box;
+            
         }
 
         public override void Render(Rect parentRect, Canvas2D canvas)
@@ -91,16 +98,16 @@ namespace UnityEditor.MaterialGraph
             Vector2 oldTranslation = new Vector2(m_CommentBox.m_Rect.x, m_CommentBox.m_Rect.y);
             Rect oldFrame = new Rect(m_CommentBox.m_Rect.x, m_CommentBox.m_Rect.y, m_CommentBox.m_Rect.width, m_CommentBox.m_Rect.height);
 
-            m_CommentBox.m_Rect.x      = translation.x;
-            m_CommentBox.m_Rect.y      = translation.y;
-            m_CommentBox.m_Rect.width  = scale.x;
+            m_CommentBox.m_Rect.x = translation.x;
+            m_CommentBox.m_Rect.y = translation.y;
+            m_CommentBox.m_Rect.width = scale.x;
             m_CommentBox.m_Rect.height = scale.y;
 
             Vector2 newTranslation = new Vector2(translation.x, translation.y);
 
-            foreach(CanvasElement e in containedNodes)
+            foreach (CanvasElement e in containedNodes)
             {
-                if(e is DrawableCommentBox)
+                if (e is DrawableCommentBox)
                 {
                     DrawableCommentBox nestedBox = (DrawableCommentBox)e;
                     nestedBox.ClearContainingNodesList();
@@ -110,6 +117,20 @@ namespace UnityEditor.MaterialGraph
             if (onMove != null)
                 onMove(containedNodes, (newTranslation - oldTranslation));
         }
+
+        public static void OnGUI(List<CanvasElement> selection)
+        {
+            DrawableCommentBox drawbleCommentBox = selection.Where(x => x is DrawableCommentBox).Cast<DrawableCommentBox>().FirstOrDefault();
+            if (drawbleCommentBox != null && drawbleCommentBox.m_CommentBox.OnGUI())
+            {
+                // if we were changed, we need to redraw all the
+                // dependent nodes.
+                drawbleCommentBox.title = drawbleCommentBox.m_CommentBox.m_Label;
+                drawbleCommentBox.Invalidate();
+                //RepaintDependentNodes(drawableMaterialNode.m_Node);
+            }
+        }
+
     }
     
 }

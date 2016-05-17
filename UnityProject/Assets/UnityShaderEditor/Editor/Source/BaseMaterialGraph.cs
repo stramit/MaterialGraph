@@ -19,6 +19,16 @@ namespace UnityEditor.MaterialGraph
             this.m_Rect = rect;
             this.m_Label = label;
         }
+
+        public bool OnGUI()
+        {
+            GUILayout.Label("Label", EditorStyles.boldLabel);
+            string newLabel = EditorGUILayout.TextField(m_Label);
+            bool changed = !newLabel.Equals(m_Label);
+            m_Label = newLabel;
+            return changed;
+        }
+
     }
 
     public abstract class BaseMaterialGraph : Graph

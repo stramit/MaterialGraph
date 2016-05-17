@@ -146,7 +146,7 @@ namespace UnityEditor.MaterialGraph
             }
 
             // Add a comment box for grouping nodes
-            gm.AddItem(new GUIContent("Comment Box"), false, AddComment, new AddCommentCreationObject(parent.MouseToCanvas(@event.mousePosition), "CommentBox"));
+            gm.AddItem(new GUIContent("Comment Box"), false, AddComment, new AddCommentCreationObject(parent.MouseToCanvas(@event.mousePosition), "Comment box"));
 
             gm.ShowAsContext();
             return true;
@@ -192,7 +192,10 @@ namespace UnityEditor.MaterialGraph
 
             m_NodeExpanded = MaterialGraphStyles.Header("Selected", m_NodeExpanded);
             if (m_NodeExpanded)
+            {
                 DrawableMaterialNode.OnGUI(m_Canvas.selection);
+                DrawableCommentBox.OnGUI(m_Canvas.selection);
+            }
       
             GUILayout.EndScrollView();
             if (GUILayout.Button("Export"))
