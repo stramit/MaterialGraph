@@ -4,7 +4,7 @@ using UnityEngine.RMGUI;
 
 namespace RMGUI.GraphView.Demo
 {
-	[StyleSheet("Assets/NewUI/Editor/Demo/Views/SimpleContentView.uss")]
+	[StyleSheet("Assets/Editor/Demo/Views/SimpleContentView.uss")]
 	public class SimpleContentView : GraphView
 	{
 		public SimpleContentView()
@@ -20,17 +20,19 @@ namespace RMGUI.GraphView.Demo
 					{Event.KeyboardEvent("a"), FrameAll},
 					{Event.KeyboardEvent("f"), FrameSelection},
 					{Event.KeyboardEvent("o"), FrameOrigin},
-					{Event.KeyboardEvent("delete"), DeleteSelection}
+					{Event.KeyboardEvent("delete"), DeleteSelection},
+					{Event.KeyboardEvent("#tab"), FramePrev},
+					{Event.KeyboardEvent("tab"), FrameNext}
 				}));
 
-			AddDecorator(new GridBackground());
+			InsertChild(0, new GridBackground());
 
-			dataMapper[typeof(CircleData)] = typeof(Circle);
-			dataMapper[typeof(InvisibleBorderContainerData)] = typeof(InvisibleBorderContainer);
-			dataMapper[typeof(MiniMapData)] = typeof(MiniMap);
-			dataMapper[typeof(SimpleElementData)] = typeof(SimpleElement);
-			dataMapper[typeof(WWWImageData)] = typeof(WWWImage);
-			dataMapper[typeof(IMGUIData)] = typeof(IMGUIElement);
+			dataMapper[typeof(CirclePresenter)] = typeof(Circle);
+			dataMapper[typeof(InvisibleBorderContainerPresenter)] = typeof(InvisibleBorderContainer);
+			dataMapper[typeof(MiniMapPresenter)] = typeof(MiniMap);
+			dataMapper[typeof(SimpleElementPresenter)] = typeof(SimpleElement);
+			dataMapper[typeof(WWWImagePresenter)] = typeof(WWWImage);
+			dataMapper[typeof(IMGUIPresenter)] = typeof(IMGUIElement);
 		}
 	}
 }

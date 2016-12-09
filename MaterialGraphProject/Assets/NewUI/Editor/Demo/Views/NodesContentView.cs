@@ -1,12 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.RMGUI;
 
 namespace RMGUI.GraphView.Demo
 {
-	[StyleSheet("Assets/NewUI/Editor/Demo/Views/NodalView.uss")]
+	[StyleSheet("Assets/Editor/Demo/Views/NodalView.uss")]
 	class NodesContentView : SimpleContentView
 	{
 		private readonly System.Random rnd = new System.Random();
@@ -24,21 +22,21 @@ namespace RMGUI.GraphView.Demo
 				return EventPropagation.Continue;
 			}));
 
-			dataMapper[typeof(CustomEdgeData)] = typeof(CustomEdge);
-			dataMapper[typeof(NodeAnchorData)] = typeof(NodeAnchor);
-			dataMapper[typeof(NodeData)] = typeof(Node);
-			dataMapper[typeof(VerticalNodeData)] = typeof(Node);
+			dataMapper[typeof(CustomEdgePresenter)] = typeof(CustomEdge);
+			dataMapper[typeof(NodeAnchorPresenter)] = typeof(NodeAnchor);
+			dataMapper[typeof(NodePresenter)] = typeof(Node);
+			dataMapper[typeof(VerticalNodePresenter)] = typeof(Node);
 		}
 
 		public void CreateOperator()
 		{
-			var nodalViewData = dataSource as NodesContentViewData;
-			if (nodalViewData != null)
+			var presenter = ((GraphView) this).presenter as NodesContentViewPresenter;
+			if (presenter != null)
 			{
 				var x = rnd.Next(0, 600);
 				var y = rnd.Next(0, 300);
 
-				nodalViewData.CreateOperator(typeof(Vector3), new Rect(x, y, 200, 176), "Shiny New Operator");
+				presenter.CreateOperator(typeof(Vector3), new Rect(x, y, 200, 176), "Shiny New Operator");
 			}
 		}
 	}

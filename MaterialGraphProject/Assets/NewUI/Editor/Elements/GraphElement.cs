@@ -6,29 +6,29 @@ namespace RMGUI.GraphView
 {
 	public abstract class GraphElement : DataWatchContainer, ISelectable
 	{
-		GraphElementData m_DataProvider;
+		GraphElementPresenter m_Presenter;
 
-		readonly static ClassList s_ElementsClassList = new ClassList("graphElement");
+		static readonly ClassList s_ElementsClassList = new ClassList("graphElement");
 
-		public GraphElement()
+		protected GraphElement()
 		{
 			classList = s_ElementsClassList;
 		}
 
-		public T GetData<T>() where T : GraphElementData
+		public T GetPresenter<T>() where T : GraphElementPresenter
 		{
-			return dataProvider as T;
+			return presenter as T;
 		}
 
-		public GraphElementData dataProvider
+		public GraphElementPresenter presenter
 		{
-			get { return m_DataProvider; }
+			get { return m_Presenter; }
 			set
 			{
-				if (m_DataProvider == value)
+				if (m_Presenter == value)
 					return;
 				RemoveWatch();
-				m_DataProvider = value;
+				m_Presenter = value;
 				OnDataChanged();
 				AddWatch();
 			}
@@ -36,13 +36,12 @@ namespace RMGUI.GraphView
 
 		protected override object toWatch
 		{
-			get { return dataProvider; }
+			get { return presenter; }
 		}
 
 		public override void OnDataChanged()
 		{
-			var data = dataProvider;
-			if (data == null)
+			if (presenter == null)
 			{
 				return;
 			}
@@ -53,15 +52,15 @@ namespace RMGUI.GraphView
 				var graphElement = visualElement as GraphElement;
 				if (graphElement != null)
 				{
-					GraphElementData childData = graphElement.dataProvider;
-					if (childData != null)
+					GraphElementPresenter childPresenter = graphElement.presenter;
+					if (childPresenter != null)
 					{
-						childData.selected = data.selected;
+						childPresenter.selected = presenter.selected;
 					}
 				}
 			}
 
-			if (data.selected)
+			if (presenter.selected)
 			{
 				AddToClassList("selected");
 			}
@@ -70,15 +69,15 @@ namespace RMGUI.GraphView
 				RemoveFromClassList("selected");
 			}
 
-			SetPosition(data.position);
+			SetPosition(presenter.position);
 		}
 
 		public virtual bool IsSelectable()
 		{
-			GraphElementData data = dataProvider;
-			if (data != null)
+			GraphElementPresenter presenter = this.presenter;
+			if (presenter != null)
 			{
-				return (data.capabilities & Capabilities.Selectable) == Capabilities.Selectable;
+				return (presenter.capabilities & Capabilities.Selectable) == Capabilities.Selectable;
 			}
 			return false;
 		}
@@ -92,7 +91,7 @@ namespace RMGUI.GraphView
 
 		public virtual void SetPosition(Rect newPos)
 		{
-			// set absolute position from data
+			// set absolute position from presenter
 			position = newPos;
 		}
 	}
