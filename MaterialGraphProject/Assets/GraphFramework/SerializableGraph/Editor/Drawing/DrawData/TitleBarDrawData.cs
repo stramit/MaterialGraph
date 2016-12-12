@@ -5,6 +5,7 @@ using UnityEngine.MaterialGraph;
 
 namespace UnityEditor.Graphing.Drawing
 {
+	// TODO JOCE: Should most probably derive from GraphElementPresenter.
     public class TitleBarDrawData : ScriptableObject
     {
         List<TitleBarButtonDrawData> m_leftItems;

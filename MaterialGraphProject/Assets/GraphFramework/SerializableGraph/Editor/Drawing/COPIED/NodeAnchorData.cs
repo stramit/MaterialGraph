@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using UnityEngine;
 namespace UnityEditor.Graphing.Drawing
 {
 	[Serializable]
-	public class NodeAnchorData : GraphElementData, IConnector
+	public class NodeAnchorPresenter : GraphElementPresenter, IConnector
 	{
 		protected object m_Source;
 		public object source
@@ -71,17 +72,17 @@ namespace UnityEditor.Graphing.Drawing
 		// TODO we'll probably want to distinguish between InputAnchorData and OutputAnchorData so as to
 		// not burden ourselves with extra data we don't need.
 		[SerializeField]
-		private List<GraphElementData> m_InputConnections;
+		private List<GraphElementPresenter> m_InputConnections;
 
 		[SerializeField]
-		private List<GraphElementData> m_OutputConnections;
+		private List<GraphElementPresenter> m_OutputConnections;
 
 		public void Connect(IConnection connection)
 		{
-			var ged = connection as GraphElementData;
+			var ged = connection as GraphElementPresenter;
 			if (connection != null && ged == null)
 			{
-				throw new ArgumentException("The value passed to NodeAnchorData.Connect is not a GraphElementData");
+				throw new ArgumentException("The value passed to NodeAnchorPresenter.Connect is not a GraphElementPresenter");
 			}
 
 			if (m_Direction == Direction.Input)
@@ -102,10 +103,10 @@ namespace UnityEditor.Graphing.Drawing
 
 		public void Disconnect(IConnection connection)
 		{
-			var ged = connection as GraphElementData;
+			var ged = connection as GraphElementPresenter;
 			if (connection != null && ged == null)
 			{
-				throw new ArgumentException("The value passed to NodeAnchorData.Disconnect is not a GraphElementData");
+				throw new ArgumentException("The value passed to NodeAnchorPresenter.Disconnect is not a GraphElementPresenter");
 			}
 
 			if (m_Direction == Direction.Input)
@@ -122,10 +123,11 @@ namespace UnityEditor.Graphing.Drawing
 		{
 			base.OnEnable();
 			m_Type = typeof(object);
-			m_OutputConnections = new List<GraphElementData>();
-			m_InputConnections = new List<GraphElementData>();
+			m_OutputConnections = new List<GraphElementPresenter>();
+			m_InputConnections = new List<GraphElementPresenter>();
 		}
 
-		protected NodeAnchorData() {}
+		protected NodeAnchorPresenter() {}
 	}
 }
+#endif

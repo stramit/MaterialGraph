@@ -8,9 +8,11 @@ namespace RMGUI.GraphView
 	public abstract class GraphViewPresenter : ScriptableObject
 	{
 		[SerializeField]
-		private List<GraphElementPresenter> m_Elements = new List<GraphElementPresenter>();
+		// TODO TEMP protected while upgrading MaterialGraph. Needs to go back private
+		protected List<GraphElementPresenter> m_Elements = new List<GraphElementPresenter>();
 
-		public IEnumerable<GraphElementPresenter> elements
+		// TODO TEMP Revert to non virtual
+		public virtual IEnumerable<GraphElementPresenter> elements
 		{
 			get { return m_Elements; }
 		}

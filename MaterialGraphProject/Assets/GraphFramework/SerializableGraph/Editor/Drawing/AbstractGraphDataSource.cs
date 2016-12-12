@@ -8,14 +8,12 @@ using UnityEngine.Graphing;
 namespace UnityEditor.Graphing.Drawing
 {
     [Serializable]
-    public abstract class AbstractGraphDataSource : ScriptableObject, IGraphElementDataSource
+    public abstract class AbstractGraphDataSource : GraphViewPresenter
     {
         [SerializeField]
-        private List<GraphElementData> m_Elements = new List<GraphElementData>();
+        private List<GraphElementPresenter> m_TempElements = new List<GraphElementPresenter>();
 
-        [SerializeField]
-        private List<GraphElementData> m_TempElements = new List<GraphElementData>();
-
+		// TODO JOCE Why this other data mapper? Should probably be using GraphView's own
         private readonly Dictionary<Type, Type> m_DataMapper = new Dictionary<Type, Type>();
 
         public IGraphAsset graphAsset { get; private set; }
@@ -49,7 +47,7 @@ namespace UnityEditor.Graphing.Drawing
             var deletedElements = m_Elements
                 .OfType<NodeDrawData>()
                 .Where(nd => !graphAsset.graph.GetNodes<INode>().Contains(nd.node))
-                .OfType<GraphElementData>()
+                .OfType<GraphElementPresenter>()
                 .ToList();
 
             var deletedEdges = m_Elements.OfType<EdgeDrawData>()
@@ -128,7 +126,7 @@ namespace UnityEditor.Graphing.Drawing
             }
 
             // Add nodes marked for addition
-            m_Elements.AddRange(addedNodes.OfType<GraphElementData>());
+            m_Elements.AddRange(addedNodes.OfType<GraphElementPresenter>());
 
             // Find edges in the graph that are not being drawn and create edge data for them
             foreach (var edge in graphAsset.graph.edges)
@@ -159,7 +157,7 @@ namespace UnityEditor.Graphing.Drawing
                 }
             }
 
-            m_Elements.AddRange(drawableEdges.OfType<GraphElementData>());
+            m_Elements.AddRange(drawableEdges.OfType<GraphElementPresenter>());
         }
 
         private Type MapType(Type type)
@@ -212,17 +210,17 @@ namespace UnityEditor.Graphing.Drawing
             UpdateData();
         }
 
-        public IEnumerable<GraphElementData> elements
+        public override IEnumerable<GraphElementPresenter> elements
         {
             get { return m_Elements.Union(m_TempElements); }
         }
         
-        public void AddTempElement(GraphElementData element)
+        public void AddTempElement(GraphElementPresenter element)
         {
             m_TempElements.Add(element);
         }
 
-        public void RemoveTempElement(GraphElementData element)
+        public void RemoveTempElement(GraphElementPresenter element)
         {
             m_TempElements.Remove(element);
         }
@@ -242,12 +240,12 @@ namespace UnityEditor.Graphing.Drawing
             }
         }
 
-        public void AddElement(GraphElementData element)
+        public void AddElement(GraphElementPresenter element)
         {
             throw new ArgumentException("Not supported on Serializable Graph, data comes from data store");
         }
 
-        public void RemoveElement(GraphElementData element)
+        public void RemoveElement(GraphElementPresenter element)
         {
             throw new ArgumentException("Not supported on Serializable Graph, data comes from data store");
         }

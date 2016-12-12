@@ -1,3 +1,4 @@
+#if false
 using System;
 using System.Linq;
 using RMGUI.GraphView;
@@ -43,7 +44,7 @@ namespace UnityEditor.Graphing.Drawing
 								return EventPropagation.Continue;
 						}
 
-						GraphElementData data = ce.dataProvider;
+						GraphElementPresenter data = ce.dataProvider;
 						if (data != null && ((ce.dataProvider.capabilities & Capabilities.Movable) != Capabilities.Movable))
 							return EventPropagation.Continue;
 
@@ -61,7 +62,7 @@ namespace UnityEditor.Graphing.Drawing
 							if (ce == null || ce.dataProvider == null)
 								continue;
 
-							GraphElementData data = ce.dataProvider;
+							GraphElementPresenter data = ce.dataProvider;
 							if ((ce.dataProvider.capabilities & Capabilities.Movable) != Capabilities.Movable)
 								continue;
 
@@ -98,3 +99,4 @@ namespace UnityEditor.Graphing.Drawing
 		}
 	}
 }
+#endif

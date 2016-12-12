@@ -6,7 +6,7 @@ using UnityEngine.RMGUI;
 
 namespace RMGUI.GraphView
 {
-	[StyleSheet("Assets/Editor/Views/GraphView.uss")]
+	[StyleSheet("Assets/NewUI/Editor/Views/GraphView.uss")]
 	public abstract class GraphView : DataWatchContainer, ISelection
 	{
 		private GraphViewPresenter m_Presenter;

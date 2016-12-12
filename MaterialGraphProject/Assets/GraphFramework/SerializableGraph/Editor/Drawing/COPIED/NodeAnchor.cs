@@ -1,3 +1,5 @@
+#if false
+
 using System;
 using RMGUI.GraphView;
 using UnityEngine;
@@ -10,15 +12,15 @@ namespace UnityEditor.Graphing.Drawing
 	{
 		public const float k_NodeSize = 15.0f;
 
-		private readonly EdgeConnector<EdgeData> m_RegularConnector = new EdgeConnector<EdgeData>();
-		private readonly EdgeConnector<EdgeData> m_CustomConnector = new EdgeConnector<EdgeData>();
+		private readonly EdgeConnector<EdgePresenter> m_RegularConnector = new EdgeConnector<EdgePresenter>();
+		private readonly EdgeConnector<EdgePresenter> m_CustomConnector = new EdgeConnector<EdgePresenter>();
 
 		private IManipulator m_CurrentConnector;
 
 		VisualElement m_ConnectorBox;
 		VisualElement m_ConnectorText;
 
-		public NodeAnchor(NodeAnchorData data)
+		public NodeAnchor(NodeAnchorPresenter data)
 		{
 			// currently we don't want to be styled as .graphElement since we're contained in a Node
             classList = new ClassList("NodeAnchor");
@@ -40,7 +42,7 @@ namespace UnityEditor.Graphing.Drawing
 
 		private void UpdateConnector()
 		{
-			var nodeAnchorData = GetData<NodeAnchorData>();
+			var nodeAnchorData = GetData<NodeAnchorPresenter>();
 			if (nodeAnchorData == null)
 				return;
 
@@ -63,7 +65,7 @@ namespace UnityEditor.Graphing.Drawing
 		{
 			UpdateConnector();
 
-			var nodeAnchorData = GetData<NodeAnchorData>();
+			var nodeAnchorData = GetData<NodeAnchorPresenter>();
 			if (nodeAnchorData == null)
 				return;
 
@@ -84,7 +86,7 @@ namespace UnityEditor.Graphing.Drawing
 
 			string anchorName = string.IsNullOrEmpty(nodeAnchorData.name) ? type.Name : nodeAnchorData.name;
 			m_ConnectorText.content.text = anchorName;
-			GetData<NodeAnchorData>().capabilities &= ~Capabilities.Selectable;
+			GetData<NodeAnchorPresenter>().capabilities &= ~Capabilities.Selectable;
 		}
 
 		public override Vector3 GetGlobalCenter()
@@ -102,3 +104,5 @@ namespace UnityEditor.Graphing.Drawing
 		}
 	}
 }
+
+#endif

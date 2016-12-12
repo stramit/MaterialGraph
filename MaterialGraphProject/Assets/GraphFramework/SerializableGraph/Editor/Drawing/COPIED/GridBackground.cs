@@ -1,3 +1,5 @@
+#if false
+
 using System;
 using RMGUI.GraphView;
 using UnityEngine;
@@ -216,3 +218,5 @@ namespace UnityEditor.Graphing.Drawing
 		}
 	}
 }
+
+#endif

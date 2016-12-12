@@ -10,7 +10,7 @@ using Object = UnityEngine.Object;
 namespace UnityEditor.MaterialGraph.Drawing
 {
     [Serializable]
-    public class NodePreviewDrawData : GraphElementData
+    public class NodePreviewDrawData : GraphElementPresenter
     {
         protected NodePreviewDrawData()
         {}

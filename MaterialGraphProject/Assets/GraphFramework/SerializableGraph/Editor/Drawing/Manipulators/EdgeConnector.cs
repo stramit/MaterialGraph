@@ -1,3 +1,4 @@
+#if false
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine.RMGUI;
 
 namespace UnityEditor.Graphing.Drawing
 {
-    public class EdgeConnector<TEdgeData> : MouseManipulator where TEdgeData : EdgeData
+    public class EdgeConnector<TEdgeData> : MouseManipulator where TEdgeData : EdgePresenter
     {
         private readonly List<IConnector> m_CompatibleAnchors = new List<IConnector>();
         private TEdgeData m_EdgeDataCandidate;
@@ -32,7 +33,7 @@ namespace UnityEditor.Graphing.Drawing
                     var graphElement = finalTarget as GraphElement;
                     if (graphElement != null && graphElement.dataProvider != null)
                     {
-                        GraphElementData data = graphElement.dataProvider;
+                        GraphElementPresenter data = graphElement.dataProvider;
                         cnx = (IConnector) data;
                         m_GraphView = graphElement.GetFirstAncestorOfType<SerializableGraphView>();
                     }
@@ -159,3 +160,5 @@ namespace UnityEditor.Graphing.Drawing
         }
     }
 }
+
+#endif

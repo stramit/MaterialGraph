@@ -66,7 +66,7 @@ namespace UnityEditor.MaterialGraph.Drawing
 
         private void InvalidateUIIfNeedsTime(TimerState timerState)
         {
-            var data = GetData<MaterialNodeDrawData>();
+            var data = GetPresenter<MaterialNodeDrawData>();
             var childrenNodes = ListPool<INode>.Get();
             NodeUtils.DepthFirstCollectNodesFromNode(childrenNodes, data.node);
             if (childrenNodes.OfType<IRequiresTime>().Any())
@@ -105,7 +105,7 @@ namespace UnityEditor.MaterialGraph.Drawing
         {
             base.OnDataChanged();
 
-            var nodeData = dataProvider as MaterialNodeDrawData;
+            var nodeData = GetPresenter<MaterialNodeDrawData>();
             if (nodeData == null)
             {
                 m_PreviewContainer.ClearChildren();
