@@ -28,14 +28,11 @@ namespace UnityEditor.Graphing.Drawing
             classList = new ClassList("Node");
         }
 
-	    public override void DoRepaint(IStylePainter painter)
-	    {
-		    int joce = 0;
-		    joce++;
-		    base.DoRepaint(painter);
-			Trace.WriteLine(joce);
-	    }
-
+        public override void SetPosition(Rect newPos)
+        {
+            positionLeft = newPos.x;
+            positionTop = newPos.y;
+        }
 
 		private void AddContainers()
         {

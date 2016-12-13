@@ -6,7 +6,7 @@ namespace RMGUI.GraphView
 {
 	public abstract class GraphViewEditorWindow : EditorWindow
 	{
-		GraphView m_View;
+		public GraphView graphView { get; private set; }
 		GraphViewPresenter m_Presenter;
 
 		// we watch the data source for destruction and re-create it
@@ -15,18 +15,18 @@ namespace RMGUI.GraphView
 		void OnEnable()
 		{
 			m_Presenter = BuildPresenters();
-			m_View = BuildView();
-			m_View.name = "theView";
-			m_View.presenter = m_Presenter;
-			m_View.StretchToParentSize();
-			m_View.onEnter += OnEnterPanel;
-			m_View.onLeave += OnLeavePanel;
-			rootVisualContainer.AddChild(m_View);
+			graphView = BuildView();
+			graphView.name = "theView";
+			graphView.presenter = m_Presenter;
+			graphView.StretchToParentSize();
+			graphView.onEnter += OnEnterPanel;
+			graphView.onLeave += OnLeavePanel;
+			rootVisualContainer.AddChild(graphView);
 		}
 
 		void OnDisable()
 		{
-			rootVisualContainer.RemoveChild(m_View);
+			rootVisualContainer.RemoveChild(graphView);
 		}
 
 		// Override these methods to properly support domain reload & enter/exit playmode
@@ -38,9 +38,9 @@ namespace RMGUI.GraphView
 			if (m_Presenter == null)
 			{
 				m_Presenter = BuildPresenters();
-				m_View.presenter = m_Presenter;
+				graphView.presenter = m_Presenter;
 			}
-			handle = m_View.panel.dataWatch.AddWatch(m_View, m_Presenter, OnChanged);
+			handle = graphView.panel.dataWatch.AddWatch(graphView, m_Presenter, OnChanged);
 		}
 
 		void OnLeavePanel()
@@ -59,7 +59,7 @@ namespace RMGUI.GraphView
 		void OnChanged()
 		{
 			// If data was destroyed, remove the watch and try to re-create it
-			if (m_Presenter == null && m_View.panel != null)
+			if (m_Presenter == null && graphView.panel != null)
 			{
 				if (handle != null)
 				{
@@ -67,8 +67,8 @@ namespace RMGUI.GraphView
 				}
 
 				m_Presenter = BuildPresenters();
-				m_View.presenter = m_Presenter;
-				handle = m_View.panel.dataWatch.AddWatch(m_View, m_Presenter, OnChanged);
+				graphView.presenter = m_Presenter;
+				handle = graphView.panel.dataWatch.AddWatch(graphView, m_Presenter, OnChanged);
 			}
 		}
 	}

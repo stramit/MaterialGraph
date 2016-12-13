@@ -6,7 +6,8 @@ using UnityEngine.RMGUI;
 
 namespace UnityEditor.Graphing.Drawing
 {
-    public abstract class AbstractGraphEditWindow<T> : EditorWindow, ISerializationCallbackReceiver where T : class, IGraphAsset
+	// TODO JOCE Derive from GraphViewEditorWindow
+	public abstract class AbstractGraphEditWindow<T> : EditorWindow, ISerializationCallbackReceiver where T : class, IGraphAsset
     {
         public RenderTexture rt;
 
