@@ -63,6 +63,7 @@ namespace RMGUI.GraphView
 
 		public GridBackground()
 		{
+			pickingMode = PickingMode.Ignore;
 			this.StretchToParentSize();
 		}
 
