@@ -88,7 +88,7 @@ namespace RMGUI.GraphView
 					m_EdgePresenterCandidate.candidate = true;
 					m_EdgePresenterCandidate.candidatePosition = target.LocalToGlobal(evt.mousePosition);
 
-					m_GraphViewPresenter.AddElement(m_EdgePresenterCandidate);
+					m_GraphViewPresenter.AddTempElement(m_EdgePresenterCandidate);
 
 					return EventPropagation.Stop;
 
@@ -123,13 +123,10 @@ namespace RMGUI.GraphView
 							}
 						}
 
+						m_GraphViewPresenter.RemoveTempElement(m_EdgePresenterCandidate);
 						if (m_EdgePresenterCandidate != null && m_GraphViewPresenter != null)
 						{
-							if (endAnchor == null)
-							{
-								m_GraphViewPresenter.RemoveElement(m_EdgePresenterCandidate);
-							}
-							else
+							if (endAnchor != null)
 							{
 								if (m_EdgePresenterCandidate.output == null)
 								{
@@ -141,6 +138,8 @@ namespace RMGUI.GraphView
 								}
 								m_EdgePresenterCandidate.output.Connect(m_EdgePresenterCandidate);
 								m_EdgePresenterCandidate.input.Connect(m_EdgePresenterCandidate);
+
+								m_GraphViewPresenter.AddElement(m_EdgePresenterCandidate);
 							}
 
 							m_EdgePresenterCandidate.candidate = false;

@@ -10,9 +10,6 @@ namespace UnityEditor.Graphing.Drawing
     [Serializable]
     public abstract class AbstractGraphDataSource : GraphViewPresenter
     {
-        [SerializeField]
-        private List<GraphElementPresenter> m_TempElements = new List<GraphElementPresenter>();
-
 		// TODO JOCE Why this other data mapper? Should probably be using GraphView's own
         private readonly Dictionary<Type, Type> m_DataMapper = new Dictionary<Type, Type>();
 
@@ -210,29 +207,9 @@ namespace UnityEditor.Graphing.Drawing
             UpdateData();
         }
 
-        public override IEnumerable<GraphElementPresenter> elements
-        {
-            get { return m_Elements.Union(m_TempElements); }
-        }
-        
-        public void AddTempElement(GraphElementPresenter element)
-        {
-            m_TempElements.Add(element);
-        }
-
-        public void RemoveTempElement(GraphElementPresenter element)
-        {
-            m_TempElements.Remove(element);
-        }
-
-        public void ClearTempElements()
-        {
-            m_TempElements.Clear();
-        }
-
         public void Connect(AnchorDrawData left, AnchorDrawData right)
         {
-            if (left && right)
+            if (left != null && right != null)
             {
                 graphAsset.graph.Connect(left.slot.slotReference, right.slot.slotReference);
                 EditorUtility.SetDirty(graphAsset.GetScriptableObject());
@@ -240,12 +217,17 @@ namespace UnityEditor.Graphing.Drawing
             }
         }
 
-        public void AddElement(GraphElementPresenter element)
+	    public override void AddElement(EdgePresenter edge)
+	    {
+			Connect(edge.output as AnchorDrawData, edge.input as AnchorDrawData);
+		}
+
+		public override void AddElement(GraphElementPresenter element)
         {
             throw new ArgumentException("Not supported on Serializable Graph, data comes from data store");
         }
 
-        public void RemoveElement(GraphElementPresenter element)
+        public override void RemoveElement(GraphElementPresenter element)
         {
             throw new ArgumentException("Not supported on Serializable Graph, data comes from data store");
         }
