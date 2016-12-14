@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.RMGUI;
 
@@ -64,8 +65,8 @@ namespace RMGUI.GraphView
 							var scale = new Vector3(g.m00, g.m11, g.m22);
 
 							presenter.position = CalculatePosition(presenter.position.x + evt.delta.x * panSpeed.x / scale.x,
-																presenter.position.y + evt.delta.y * panSpeed.y / scale.y,
-																presenter.position.width, presenter.position.height);
+																   presenter.position.y + evt.delta.y * panSpeed.y / scale.y,
+																   presenter.position.width, presenter.position.height);
 						}
 
 						return EventPropagation.Stop;
@@ -75,6 +76,12 @@ namespace RMGUI.GraphView
 				case EventType.MouseUp:
 					if (CanStopManipulation(evt))
 					{
+						foreach (var presenter in graphView.selection.OfType<GraphElement>()
+																	 .Select(ge => ge.presenter as NodePresenter)
+																	 .Where(pr => pr != null))
+						{
+							presenter.CommitChanges();
+						}
 						this.ReleaseCapture();
 						return EventPropagation.Stop;
 					}

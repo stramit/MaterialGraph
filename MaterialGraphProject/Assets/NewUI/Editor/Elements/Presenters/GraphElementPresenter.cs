@@ -47,5 +47,9 @@ namespace RMGUI.GraphView
 		public virtual void OnRemoveFromGraph()
 		{
 		}
+
+		public virtual void CommitChanges()
+		{
+		}
 	}
 }

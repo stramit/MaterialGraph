@@ -26,7 +26,7 @@ namespace UnityEditor.Graphing.Drawing
             expanded = node.drawState.expanded;
         }
 
-        public void CommitChanges()
+        public override void CommitChanges()
         {
             var drawData = node.drawState;
             drawData.position = position;
