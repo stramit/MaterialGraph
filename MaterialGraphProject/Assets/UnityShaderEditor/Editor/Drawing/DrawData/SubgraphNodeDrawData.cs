@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using RMGUI.GraphView;
 using UnityEditor.Graphing.Drawing;
@@ -19,9 +19,9 @@ namespace UnityEditor.MaterialGraph.Drawing
                 return;
 
             subGraphNode.subGraphAsset = (MaterialSubGraphAsset)EditorGUILayout.MiniThumbnailObjectField(
-                new GUIContent("Subgraph"), 
-                subGraphNode.subGraphAsset, 
-                typeof(MaterialSubGraphAsset), null);
+                    new GUIContent("Subgraph"),
+                    subGraphNode.subGraphAsset,
+                    typeof(MaterialSubGraphAsset), null);
         }
 
         public override float GetHeight()

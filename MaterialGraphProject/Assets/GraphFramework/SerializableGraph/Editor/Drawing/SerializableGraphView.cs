@@ -15,15 +15,15 @@ namespace UnityEditor.Graphing.Drawing
         {
             // Shortcut handler to delete elements
             AddManipulator(new ShortcutHandler(
-                new Dictionary<Event, ShortcutDelegate>
-                {
-                    {Event.KeyboardEvent("a"), FrameAll},
-                    {Event.KeyboardEvent("f"), FrameSelection},
-                    {Event.KeyboardEvent("o"), FrameOrigin},
-                    {Event.KeyboardEvent("delete"), DeleteSelection},
-                    {Event.KeyboardEvent("#tab"), FramePrev},
-                    {Event.KeyboardEvent("tab"), FrameNext}
-                }));
+                    new Dictionary<Event, ShortcutDelegate>
+            {
+                {Event.KeyboardEvent("a"), FrameAll},
+                {Event.KeyboardEvent("f"), FrameSelection},
+                {Event.KeyboardEvent("o"), FrameOrigin},
+                {Event.KeyboardEvent("delete"), DeleteSelection},
+                {Event.KeyboardEvent("#tab"), FramePrev},
+                {Event.KeyboardEvent("tab"), FrameNext}
+            }));
 
             AddManipulator(new ContentZoomer());
             AddManipulator(new ContentDragger());

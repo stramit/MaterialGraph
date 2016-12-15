@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using RMGUI.GraphView;
 using UnityEngine;
 using UnityEngine.Graphing;
@@ -34,7 +34,6 @@ namespace UnityEditor.Graphing.Drawing
                         }
                     }
                     break;
-
             }
             return this.HasCapture() ? EventPropagation.Stop : EventPropagation.Continue;
         }

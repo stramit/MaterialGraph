@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using RMGUI.GraphView;
 using UnityEngine;
 using UnityEngine.RMGUI;
@@ -50,7 +50,6 @@ namespace UnityEditor.Graphing.Drawing
                         UpdateState(evt);
                     }
                     break;
-
             }
             return this.HasCapture() ? EventPropagation.Stop : EventPropagation.Continue;
         }
@@ -62,7 +61,7 @@ namespace UnityEditor.Graphing.Drawing
                 newState = ClickerState.Active;
             else
                 newState = ClickerState.Inactive;
-            
+
             if (onStateChange != null && state != newState)
                 onStateChange(newState);
             state = newState;

@@ -98,7 +98,6 @@ namespace UnityEditor.MaterialGraph.Drawing
                     m_PreviewContainer.AddChild(thePreview);
                 }
             }
-
         }
 
         public override void OnDataChanged()

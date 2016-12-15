@@ -92,7 +92,7 @@ namespace UnityEditor.MaterialGraph.Drawing
         public EventPropagation Export()
         {
             var path = EditorUtility.SaveFilePanelInProject("Export shader to file...", "shader.shader", "shader", "Enter file name");
-           
+
             var ds = dataSource as AbstractGraphDataSource;
             if (ds != null && !string.IsNullOrEmpty(path))
             {

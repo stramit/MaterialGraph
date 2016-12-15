@@ -16,7 +16,7 @@ namespace UnityEditor.MaterialGraph.Drawing
             var tNode = node as UnityEngine.MaterialGraph.PropertyNode;
             if (tNode == null)
                 return;
-            
+
             tNode.exposedState = (PropertyNode.ExposedState)EditorGUILayout.EnumPopup(new GUIContent("Exposed"), tNode.exposedState);
         }
 
