@@ -10,7 +10,7 @@ using Object = UnityEngine.Object;
 namespace UnityEditor.MaterialGraph.Drawing
 {
     [Serializable]
-    public class NodePreviewDrawData : GraphElementData
+    public class NodePreviewDrawData : GraphElementPresenter
     {
         protected NodePreviewDrawData()
         {}
@@ -120,9 +120,9 @@ namespace UnityEditor.MaterialGraph.Drawing
                 var localNode = (AbstractMasterNode)m_Node;
                 if (localNode == null)
                     return string.Empty;
-                
+
                 List<PropertyGenerator.TextureInfo> defaultTextures;
-                var resultShader =  ((AbstractMasterNode) m_Node).GetShader(GenerationMode.Preview, out defaultTextures);
+                var resultShader =  ((AbstractMasterNode)m_Node).GetShader(GenerationMode.Preview, out defaultTextures);
                 m_GeneratedShaderMode = PreviewMode.Preview3D;
                 return resultShader;
             }
@@ -162,8 +162,6 @@ namespace UnityEditor.MaterialGraph.Drawing
 
             return !MaterialGraphAsset.ShaderHasError(m_PreviewShader);
         }
-
-
 
         /// <summary>
         ///     RenderPreview gets called in OnPreviewGUI. Nodes can override

@@ -5,7 +5,7 @@ using UnityEngine.Graphing;
 
 namespace UnityEditor.Graphing.Drawing
 {
-    public class NodeDrawData : GraphElementData
+    public class NodeDrawData : GraphElementPresenter
     {
         protected NodeDrawData()
         {}
@@ -14,9 +14,9 @@ namespace UnityEditor.Graphing.Drawing
 
         public bool expanded = true;
 
-        protected List<GraphElementData> m_Children = new List<GraphElementData>();
+        protected List<GraphElementPresenter> m_Children = new List<GraphElementPresenter>();
 
-        public IEnumerable<GraphElementData> elements
+        public IEnumerable<GraphElementPresenter> elements
         {
             get { return m_Children; }
         }
@@ -26,14 +26,14 @@ namespace UnityEditor.Graphing.Drawing
             expanded = node.drawState.expanded;
         }
 
-        public void CommitChanges()
+        public override void CommitChanges()
         {
             var drawData = node.drawState;
             drawData.position = position;
             node.drawState = drawData;
         }
 
-        protected virtual IEnumerable<GraphElementData> GetControlData()
+        protected virtual IEnumerable<GraphElementPresenter> GetControlData()
         {
             return new ControlDrawData[0];
         }
@@ -56,7 +56,7 @@ namespace UnityEditor.Graphing.Drawing
             foreach (var input in node.GetSlots<ISlot>())
             {
                 var data = CreateInstance<AnchorDrawData>();
-                data.Initialize(input); 
+                data.Initialize(input);
                 m_Children.Add(data);
             }
 

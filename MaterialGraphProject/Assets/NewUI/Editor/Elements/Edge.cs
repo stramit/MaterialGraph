@@ -20,59 +20,57 @@ namespace RMGUI.GraphView
 		// TODO The tangents are calculated way to often. We should compute them on repaint only.
 
 		protected static void GetTangents(Orientation orientation, Vector2 from, Vector2 to, out Vector3[] points, out Vector3[] tangents)
-        {
-            bool invert = false;
-            if (from.x < to.x)
-            {
-                Vector3 t = to;
-                to = from;
-                from = t;
-                invert = true;
-            }
+		{
+			bool invert = false;
+			if (from.x < to.x)
+			{
+				Vector3 t = to;
+				to = from;
+				from = t;
+				invert = true;
+			}
 
-            points = new Vector3[] {to, from};
-            tangents = new Vector3[2];
+			points = new Vector3[] {to, from};
+			tangents = new Vector3[2];
 
-            const float minTangent = 30;
+			const float minTangent = 30;
 
-            float weight = .5f;
-            float weight2 = 1 - weight;
-            float y = 0;
+			float weight = .5f;
+			float weight2 = 1 - weight;
+			float y = 0;
 
-            float cleverness = Mathf.Clamp01(((to - from).magnitude - 10) / 50);
+			float cleverness = Mathf.Clamp01(((to - from).magnitude - 10) / 50);
 
-            if (orientation == Orientation.Horizontal)
-            {
-                tangents[0] = to + new Vector2((from.x - to.x) * weight + minTangent, y) * cleverness;
-                tangents[1] = from + new Vector2((from.x - to.x) * -weight2 - minTangent, -y) * cleverness;
-            }
-            else
-            {
-                float inverse = (invert) ? 1.0f : -1.0f;
-                tangents[0] = to + new Vector2(y, inverse * ((from.x - to.x) * weight + minTangent)) * cleverness;
-                tangents[1] = from + new Vector2(-y, inverse * ((from.x - to.x) * -weight2 - minTangent)) * cleverness;
-            }
-        }
+			if (orientation == Orientation.Horizontal)
+			{
+				tangents[0] = to + new Vector2((from.x - to.x) * weight + minTangent, y) * cleverness;
+				tangents[1] = from + new Vector2((from.x - to.x) * -weight2 - minTangent, -y) * cleverness;
+			}
+			else
+			{
+				float inverse = (invert) ? 1.0f : -1.0f;
+				tangents[0] = to + new Vector2(y, inverse * ((from.x - to.x) * weight + minTangent)) * cleverness;
+				tangents[1] = from + new Vector2(-y, inverse * ((from.x - to.x) * -weight2 - minTangent)) * cleverness;
+			}
+		}
 
 		public override bool Overlaps(Rect rect)
 		{
 			// bounding box check succeeded, do more fine grained check by checking intersection between the rectangles' diagonal
 			// and the line segments
-			var edgeData = GetData<EdgeData>();
-			if (edgeData == null)
-				return false;
+			var edgePresenter = GetPresenter<EdgePresenter>();
 
-			IConnector outputData = edgeData.output;
-			IConnector inputData = edgeData.input;
+			NodeAnchorPresenter outputPresenter = edgePresenter.output;
+			NodeAnchorPresenter inputPresenter = edgePresenter.input;
 
-			if (outputData == null && inputData == null)
+			if (outputPresenter == null && inputPresenter == null)
 				return false;
 
 			Vector2 from = Vector2.zero;
 			Vector2 to = Vector2.zero;
 			GetFromToPoints(ref from, ref to);
 
-			Orientation orientation = outputData != null ? outputData.orientation : inputData.orientation;
+			Orientation orientation = outputPresenter != null ? outputPresenter.orientation : inputPresenter.orientation;
 
 			Vector3[] points, tangents;
 
@@ -99,14 +97,12 @@ namespace RMGUI.GraphView
 		public override bool ContainsPoint(Vector2 localPoint)
 		{
 			// bounding box check succeeded, do more fine grained check by measuring distance to bezier points
-			var edgeData = GetData<EdgeData>();
-			if (edgeData == null)
-				return false;
+			var edgePresenter = GetPresenter<EdgePresenter>();
 
-			IConnector outputData = edgeData.output;
-			IConnector inputData = edgeData.input;
+			NodeAnchorPresenter outputPresenter = edgePresenter.output;
+			NodeAnchorPresenter inputPresenter = edgePresenter.input;
 
-			if (outputData == null && inputData == null)
+			if (outputPresenter == null && inputPresenter == null)
 				return false;
 
 			Vector2 from = Vector2.zero;
@@ -120,7 +116,7 @@ namespace RMGUI.GraphView
 				return false;
 			}
 
-			Orientation orientation = outputData != null ? outputData.orientation : inputData.orientation;
+			Orientation orientation = outputPresenter != null ? outputPresenter.orientation : inputPresenter.orientation;
 
 			Vector3[] points, tangents;
 			GetTangents(orientation, from, to, out points, out tangents);
@@ -148,82 +144,79 @@ namespace RMGUI.GraphView
 
 		protected void GetFromToPoints(ref Vector2 from, ref Vector2 to)
 		{
-			var edgeData = GetData<EdgeData>();
-			if (edgeData == null)
+			var edgePresenter = GetPresenter<EdgePresenter>();
+
+			NodeAnchorPresenter outputPresenter = edgePresenter.output;
+			NodeAnchorPresenter inputPresenter = edgePresenter.input;
+			if (outputPresenter == null && inputPresenter == null)
 				return;
 
-			IConnector outputData = edgeData.output;
-			IConnector inputData = edgeData.input;
-			if (outputData == null && inputData == null)
-				return;
-
-			if (outputData != null)
+			if (outputPresenter != null)
 			{
-				GraphElement leftAnchor = parent.allElements.OfType<GraphElement>().First(e => e.dataProvider as IConnector == outputData);
+				GraphElement leftAnchor = parent.allElements.OfType<NodeAnchor>().First(e => e.GetPresenter<NodeAnchorPresenter>() == outputPresenter);
 				if (leftAnchor != null)
 				{
 					from = leftAnchor.GetGlobalCenter();
 					from = globalTransform.inverse.MultiplyPoint3x4(from);
 				}
 			}
-			else if (edgeData.candidate)
+			else if (edgePresenter.candidate)
 			{
-				from = globalTransform.inverse.MultiplyPoint3x4(new Vector3(edgeData.candidatePosition.x, edgeData.candidatePosition.y));
+				from = globalTransform.inverse.MultiplyPoint3x4(new Vector3(edgePresenter.candidatePosition.x, edgePresenter.candidatePosition.y));
 			}
 
-			if (inputData != null)
+			if (inputPresenter != null)
 			{
-				GraphElement rightAnchor = parent.allElements.OfType<GraphElement>().First(e => e.dataProvider as IConnector == inputData);
+				GraphElement rightAnchor = parent.allElements.OfType<NodeAnchor>().First(e => e.GetPresenter<NodeAnchorPresenter>() == inputPresenter);
 				if (rightAnchor != null)
 				{
 					to = rightAnchor.GetGlobalCenter();
 					to = globalTransform.inverse.MultiplyPoint3x4(to);
 				}
 			}
-			else if (edgeData.candidate)
+			else if (edgePresenter.candidate)
 			{
-				to = globalTransform.inverse.MultiplyPoint3x4(new Vector3(edgeData.candidatePosition.x, edgeData.candidatePosition.y));
+				to = globalTransform.inverse.MultiplyPoint3x4(new Vector3(edgePresenter.candidatePosition.x, edgePresenter.candidatePosition.y));
 			}
 		}
 
 		protected virtual void DrawEdge(IStylePainter painter)
 		{
-			var edgeData = GetData<EdgeData>();
-			if (edgeData == null)
-				return;
+			var edgePresenter = GetPresenter<EdgePresenter>();
 
-			IConnector outputData = edgeData.output;
-			IConnector inputData = edgeData.input;
+			NodeAnchorPresenter outputPresenter = edgePresenter.output;
+			NodeAnchorPresenter inputPresenter = edgePresenter.input;
 
-			if (outputData == null && inputData == null)
+			if (outputPresenter == null && inputPresenter == null)
 				return;
 
 			Vector2 from = Vector2.zero;
 			Vector2 to = Vector2.zero;
 			GetFromToPoints(ref from, ref to);
 
-			Color edgeColor = (GetData<EdgeData>() != null && GetData<EdgeData>().selected) ? Color.yellow : Color.white;
+			Color edgeColor = edgePresenter.selected ? new Color(240/255f,240/255f,240/255f) : new Color(146/255f,146/255f,146/255f);
 
-			Orientation orientation = outputData != null ? outputData.orientation : inputData.orientation;
+			Orientation orientation = outputPresenter != null ? outputPresenter.orientation : inputPresenter.orientation;
 
 			Vector3[] points, tangents;
 			GetTangents(orientation, from, to, out points, out tangents);
-			Handles.DrawBezier(points[0], points[1], tangents[0], tangents[1], edgeColor, null, 5f);
+			Handles.DrawBezier(points[0], points[1], tangents[0], tangents[1], edgeColor, null, 2f);
 
 			// little widget on the middle of the edge
-			Vector3[] allPoints = Handles.MakeBezierPoints(points[0], points[1], tangents[0], tangents[1], 20);
+			// I'll leave this in here for later, might come in handy, but for now it doesn't do anything
+//			Vector3[] allPoints = Handles.MakeBezierPoints(points[0], points[1], tangents[0], tangents[1], 20);
 			Color oldColor = Handles.color;
-			Handles.color = Color.blue;
-			Handles.DrawSolidDisc(allPoints[10], new Vector3(0.0f, 0.0f, -1.0f), 6f);
-			Handles.color = edgeColor;
-			Handles.DrawWireDisc(allPoints[10], new Vector3(0.0f, 0.0f, -1.0f), 6f);
-			Handles.DrawWireDisc(allPoints[10], new Vector3(0.0f, 0.0f, -1.0f), 5f);
-
+//			Handles.color = new Color(146/255f,146/255f,146/255f);
+//			Handles.DrawSolidDisc(allPoints[10], new Vector3(0.0f, 0.0f, -1.0f), 6f);
+//			Handles.color = edgeColor;
+//			Handles.DrawWireDisc(allPoints[10], new Vector3(0.0f, 0.0f, -1.0f), 6f);
+//			Handles.DrawWireDisc(allPoints[10], new Vector3(0.0f, 0.0f, -1.0f), 5f);
+//
 			// TODO need to fix color of unconnected ends now that we've changed how the connection being built work (i.e. left is not always guaranteed to be the connected end... in fact, left doesn't exist anymore)
 			// dot on top of anchor showing it's connected
-			Handles.color = new Color(0.3f, 0.4f, 1.0f, 1.0f);
+			Handles.color = new Color(146/255f,146/255f,146/255f);
 			Handles.DrawSolidDisc(from, new Vector3(0.0f, 0.0f, -1.0f), k_EndPointRadius);
-			if (edgeData.input == null)
+			if (edgePresenter.input == null)
 				Handles.color = oldColor;
 			Handles.DrawSolidDisc(to, new Vector3(0.0f, 0.0f, -1.0f), k_EndPointRadius);
 			Handles.color = oldColor;

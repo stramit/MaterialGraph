@@ -11,30 +11,27 @@ namespace RMGUI.GraphView.Demo
 		private float m_PreviousContainerHeight = -1;
 
 		private readonly Label m_Label;
-		private readonly Dragger m_Dragger;
+		private Dragger m_Dragger;
 
 		public MiniMap()
 		{
-			zBias = 99;
 			clipChildren = false;
 
 			m_Label = new Label(new GUIContent("Floating Minimap"));
 			AddChild(m_Label);
 
-			m_Dragger = new Dragger {activateButton = MouseButton.LeftMouse, clampToParentEdges = true};
-
 			AddManipulator(new ContextualMenu((evt, customData) =>
 			{
-				var boxData = dataProvider as MiniMapData;
-				if (boxData != null)
+				var boxPresenter = presenter as MiniMapPresenter;
+				if (boxPresenter != null)
 				{
 					var menu = new GenericMenu();
-					menu.AddItem(new GUIContent(boxData.anchored ? "Make floating" :  "Anchor"), false,
+					menu.AddItem(new GUIContent(boxPresenter.anchored ? "Make floating" :  "Anchor"), false,
 						contentView =>
 						{
-							var bData = dataProvider as MiniMapData;
-							if (bData != null)
-								bData.anchored = !bData.anchored;
+							var bPresenter = presenter as MiniMapPresenter;
+							if (bPresenter != null)
+								bPresenter.anchored = !bPresenter.anchored;
 						},
 								 this);
 					menu.ShowAsContext();
@@ -52,58 +49,75 @@ namespace RMGUI.GraphView.Demo
 
 		private void AdjustAnchoring()
 		{
-			var miniMapData = dataProvider as MiniMapData;
-			if (miniMapData == null)
+			var miniMapPresenter = presenter as MiniMapPresenter;
+			if (miniMapPresenter == null)
 			{
 				return;
 			}
 
-			// TODO we might want to update the movable capability...
-			if (miniMapData.anchored)
+			if (miniMapPresenter.anchored)
 			{
-				RemoveManipulator(m_Dragger);
+				presenter.capabilities &= ~Capabilities.Movable;
 				ResetPositionProperties();
 				AddToClassList("anchored");
 			}
 			else
 			{
-				AddManipulator(m_Dragger);
+				if (m_Dragger == null)
+				{
+					m_Dragger = new Dragger {clampToParentEdges = true};
+					AddManipulator(m_Dragger);
+				}
+				presenter.capabilities |= Capabilities.Movable;
 				RemoveFromClassList("anchored");
 			}
 		}
 
 		private void Resize()
 		{
-			var miniMapData = dataProvider as MiniMapData;
-			if (miniMapData == null || parent == null)
+			var miniMapPresenter = presenter as MiniMapPresenter;
+			if (miniMapPresenter == null || parent == null)
  			{
 				return;
 			}
 
 			if (parent.position.height > parent.position.width)
 			{
-				height = miniMapData.maxHeight;
+				height = miniMapPresenter.maxHeight;
 				width = parent.position.width * height / parent.position.height;
 			}
 			else
 			{
-				width = miniMapData.maxWidth;
+				width = miniMapPresenter.maxWidth;
 				height = parent.position.height * width / parent.position.width;
  			}
 
 			// Relocate if partially visible on bottom or right side (left/top not checked, only bottom/right affected by a size change)
 			if (positionLeft + width > parent.position.x + parent.position.width)
 			{
-				var newPosition = miniMapData.position;
+				var newPosition = miniMapPresenter.position;
 				newPosition.x -= positionLeft + width - (parent.position.x + parent.position.width);
-				miniMapData.position = newPosition;
+				miniMapPresenter.position = newPosition;
 			}
 
 			if (positionTop + height > parent.position.y + parent.position.height)
 			{
-				var newPosition = miniMapData.position;
+				var newPosition = miniMapPresenter.position;
 				newPosition.y -= positionTop + height - (parent.position.y + parent.position.height);
-				miniMapData.position = newPosition;
+				miniMapPresenter.position = newPosition;
+			}
+
+			var newMiniMapPos = miniMapPresenter.position;
+			newMiniMapPos.width = width;
+			newMiniMapPos.height = height;
+			newMiniMapPos.x = Mathf.Max(parent.position.x, newMiniMapPos.x);
+			newMiniMapPos.y = Mathf.Max(parent.position.y, newMiniMapPos.y);
+			miniMapPresenter.position = newMiniMapPos;
+
+			if (!miniMapPresenter.anchored)
+			{
+				// Update to prevent onscreen mishaps especially at tiny window sizes
+				position = miniMapPresenter.position;
 			}
 		}
 
@@ -120,17 +134,17 @@ namespace RMGUI.GraphView.Demo
 			float containerWidth = parent.position.width / containerScale.x;
 			float containerHeight = parent.position.height / containerScale.y;
 
-			if ( (containerWidth != m_PreviousContainerWidth || containerHeight != m_PreviousContainerHeight) && dataProvider != null)
+			if ( (containerWidth != m_PreviousContainerWidth || containerHeight != m_PreviousContainerHeight) && presenter != null)
 			{
 				m_PreviousContainerWidth = containerWidth;
 				m_PreviousContainerHeight = containerHeight;
 				Resize();
 			}
 
-			m_Label.content = new GUIContent("Minimap p:" +
-											 String.Format("{0:0}", containerPosition.position.x) + "," + String.Format("{0:0}", containerPosition.position.y) + " t: " +
-											 String.Format("{0:0}", containerTranslation.x) + "," + String.Format("{0:0}", containerTranslation.y) + " s: " +
-											 String.Format("{0:N2}", containerScale.x)/* + "," + String.Format("{0:N2}", containerScale.y)*/);
+			m_Label.content.text = "Minimap p:" +
+								   String.Format("{0:0}", containerPosition.position.x) + "," + String.Format("{0:0}", containerPosition.position.y) + " t: " +
+								   String.Format("{0:0}", containerTranslation.x) + "," + String.Format("{0:0}", containerTranslation.y) + " s: " +
+								   String.Format("{0:N2}", containerScale.x)/* + "," + String.Format("{0:N2}", containerScale.y)*/;
 
 			base.DoRepaint(painter);
 
@@ -141,7 +155,7 @@ namespace RMGUI.GraphView.Demo
 
 				// TODO: Should Edges be displayed at all?
 				// TODO: Maybe edges need their own capabilities flag.
-				if (elem == null || (elem.dataProvider.capabilities & Capabilities.Floating) != 0 || (elem.dataProvider is EdgeData))
+				if (elem == null || (elem.presenter.capabilities & Capabilities.Floating) != 0 || (elem.presenter is EdgePresenter))
 				{
 					continue;
 				}
@@ -170,23 +184,29 @@ namespace RMGUI.GraphView.Demo
 				rect.x += containerPosition.x * position.width / containerWidth;
 				rect.y += containerPosition.y * (position.height-titleBarOffset) / containerHeight;
 
-				if (rect.x < position.xMin)
+				// Clip using a minimal 2 pixel wide frame around edges
+				// (except yMin since we already have the titleBar offset which is enough for clipping)
+				var xMin = position.xMin + 2;
+				var xMax = position.xMax - 2;
+				var yMax = position.yMax - 2;
+
+				if (rect.x < xMin)
 				{
-					if (rect.x < position.xMin - rect.width)
+					if (rect.x < xMin - rect.width)
 					{
 						continue;
 					}
-					rect.width -= position.xMin - rect.x;
-					rect.x = position.xMin;
+					rect.width -= xMin - rect.x;
+					rect.x = xMin;
 				}
 
-				if (rect.x + rect.width >= position.xMax)
+				if (rect.x + rect.width >= xMax)
 				{
-					if (rect.x >= position.xMax)
+					if (rect.x >= xMax)
 					{
 						continue;
 					}
-					rect.width -= rect.x + rect.width - position.xMax;
+					rect.width -= rect.x + rect.width - xMax;
 				}
 
 				if (rect.y < position.yMin+titleBarOffset)
@@ -199,13 +219,13 @@ namespace RMGUI.GraphView.Demo
 					rect.y = position.yMin+titleBarOffset;
 				}
 
-				if (rect.y + rect.height >= position.yMax)
+				if (rect.y + rect.height >= yMax)
 				{
-					if (rect.y >= position.yMax)
+					if (rect.y >= yMax)
 					{
 						continue;
 					}
-					rect.height -= rect.y + rect.height - position.yMax;
+					rect.height -= rect.y + rect.height - yMax;
 				}
 
 				Handles.DrawSolidRectangleWithOutline(rect, Color.grey, Color.grey);

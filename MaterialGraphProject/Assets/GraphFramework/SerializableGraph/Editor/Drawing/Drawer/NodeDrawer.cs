@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using RMGUI.GraphView;
 using UnityEngine;
@@ -27,9 +28,15 @@ namespace UnityEditor.Graphing.Drawing
             classList = new ClassList("Node");
         }
 
+        public override void SetPosition(Rect newPos)
+        {
+            positionLeft = newPos.x;
+            positionTop = newPos.y;
+        }
+
         private void AddContainers()
         {
-            /* 
+            /*
              * Layout structure:
              * node
              * - left
@@ -113,9 +120,9 @@ namespace UnityEditor.Graphing.Drawing
             {
                 var hidden = !nodeData.expanded && !anchor.connected;
                 if (!hidden && anchor.direction == Direction.Input)
-                    m_InputContainer.AddChild(new NodeAnchor(anchor));
+                    m_InputContainer.AddChild(NodeAnchor.Create<EdgeDrawData>(anchor));
                 else if (!hidden && anchor.direction == Direction.Output)
-                    m_OutputContainer.AddChild(new NodeAnchor(anchor));
+                    m_OutputContainer.AddChild(NodeAnchor.Create<EdgeDrawData>(anchor));
             }
         }
 
@@ -173,7 +180,7 @@ namespace UnityEditor.Graphing.Drawing
         {
             base.OnDataChanged();
 
-            var nodeData = dataProvider as NodeDrawData;
+            var nodeData = GetPresenter<NodeDrawData>();
 
             if (nodeData == null)
             {
