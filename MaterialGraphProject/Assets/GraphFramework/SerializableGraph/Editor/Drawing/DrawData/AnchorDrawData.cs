@@ -13,7 +13,7 @@ namespace UnityEditor.Graphing.Drawing
         }
     }
 
-	// TODO JOCE Use GraphView's Input and Output node anchors instead.
+    // TODO JOCE Use GraphView's Input and Output node anchors instead.
 
     [Serializable]
     public class AnchorDrawData : NodeAnchorPresenter
@@ -27,14 +27,14 @@ namespace UnityEditor.Graphing.Drawing
         {
             this.slot = slot;
             name = slot.displayName;
-			anchorType = typeof(Vector4);
-			m_Direction = slot.isInputSlot ? Direction.Input : Direction.Output;
+            anchorType = typeof(Vector4);
+            m_Direction = slot.isInputSlot ? Direction.Input : Direction.Output;
         }
 
-	    private Direction m_Direction;
-	    public override Direction direction
-	    {
-		    get { return m_Direction; }
-	    }
+        private Direction m_Direction;
+        public override Direction direction
+        {
+            get { return m_Direction; }
+        }
     }
 }

@@ -8,7 +8,7 @@ using System;
 
 namespace UnityEditor.Graphing.Drawing
 {
-	// TODO JOCE: we should not need a title bar drawer. It should just be a visual element in the nodedrawer.
+    // TODO JOCE: we should not need a title bar drawer. It should just be a visual element in the nodedrawer.
     [StyleSheet("Assets/GraphFramework/SerializableGraph/Editor/Drawing/Styles/TitleBar.uss")]
     public class TitleBarDrawer : DataWatchContainer
     {
@@ -34,8 +34,6 @@ namespace UnityEditor.Graphing.Drawing
         {
             classList = ClassList.empty;
             name = "TitleBar";
-// TODO JOCE zBias is dead
-//            zBias = 99;
 
             m_LeftContainer = new VisualContainer()
             {

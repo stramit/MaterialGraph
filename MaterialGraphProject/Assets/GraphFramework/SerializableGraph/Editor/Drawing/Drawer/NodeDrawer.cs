@@ -34,9 +34,9 @@ namespace UnityEditor.Graphing.Drawing
             positionTop = newPos.y;
         }
 
-		private void AddContainers()
+        private void AddContainers()
         {
-            /* 
+            /*
              * Layout structure:
              * node
              * - left

@@ -12,8 +12,8 @@ namespace RMGUI.GraphView
 		// TODO TEMP protected while upgrading MaterialGraph. Needs to go back private
 		protected List<GraphElementPresenter> m_Elements = new List<GraphElementPresenter>();
 
-        [SerializeField]
-        private List<GraphElementPresenter> m_TempElements = new List<GraphElementPresenter>();
+		[SerializeField]
+		private List<GraphElementPresenter> m_TempElements = new List<GraphElementPresenter>();
 
 		public virtual void AddElement(GraphElementPresenter element)
 		{
@@ -37,25 +37,24 @@ namespace RMGUI.GraphView
 			m_TempElements.Clear();
 		}
 
-        public IEnumerable<GraphElementPresenter> elements
-        {
-            get { return m_Elements.Union(m_TempElements); }
-        }
+		public IEnumerable<GraphElementPresenter> elements
+		{
+			get { return m_Elements.Union(m_TempElements); }
+		}
 
-        public void AddTempElement(GraphElementPresenter element)
-        {
-            m_TempElements.Add(element);
-        }
+		public void AddTempElement(GraphElementPresenter element)
+		{
+			m_TempElements.Add(element);
+		}
 
-        public void RemoveTempElement(GraphElementPresenter element)
-        {
-            m_TempElements.Remove(element);
-        }
+		public void RemoveTempElement(GraphElementPresenter element)
+		{
+			m_TempElements.Remove(element);
+		}
 
-        public void ClearTempElements()
-        {
-            m_TempElements.Clear();
-        }
-
+		public void ClearTempElements()
+		{
+			m_TempElements.Clear();
+		}
 	}
 }

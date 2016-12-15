@@ -4,9 +4,9 @@ using UnityEngine.RMGUI;
 
 namespace UnityEditor.Graphing.Drawing
 {
-	// TODO JOCE Remove all traces of dataSource
+    // TODO JOCE Remove all traces of dataSource
 
-	// TODO JOCE: Maybe this needs to dereive from something we already have?
+    // TODO JOCE: Maybe this needs to dereive from something we already have?
     [StyleSheet("Assets/GraphFramework/SerializableGraph/Editor/Drawing/Styles/GraphEditor.uss")]
     public class GraphEditorDrawer : DataWatchContainer
     {

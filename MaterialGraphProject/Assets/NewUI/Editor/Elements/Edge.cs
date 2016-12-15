@@ -20,39 +20,39 @@ namespace RMGUI.GraphView
 		// TODO The tangents are calculated way to often. We should compute them on repaint only.
 
 		protected static void GetTangents(Orientation orientation, Vector2 from, Vector2 to, out Vector3[] points, out Vector3[] tangents)
-        {
-            bool invert = false;
-            if (from.x < to.x)
-            {
-                Vector3 t = to;
-                to = from;
-                from = t;
-                invert = true;
-            }
+		{
+			bool invert = false;
+			if (from.x < to.x)
+			{
+				Vector3 t = to;
+				to = from;
+				from = t;
+				invert = true;
+			}
 
-            points = new Vector3[] {to, from};
-            tangents = new Vector3[2];
+			points = new Vector3[] {to, from};
+			tangents = new Vector3[2];
 
-            const float minTangent = 30;
+			const float minTangent = 30;
 
-            float weight = .5f;
-            float weight2 = 1 - weight;
-            float y = 0;
+			float weight = .5f;
+			float weight2 = 1 - weight;
+			float y = 0;
 
-            float cleverness = Mathf.Clamp01(((to - from).magnitude - 10) / 50);
+			float cleverness = Mathf.Clamp01(((to - from).magnitude - 10) / 50);
 
-            if (orientation == Orientation.Horizontal)
-            {
-                tangents[0] = to + new Vector2((from.x - to.x) * weight + minTangent, y) * cleverness;
-                tangents[1] = from + new Vector2((from.x - to.x) * -weight2 - minTangent, -y) * cleverness;
-            }
-            else
-            {
-                float inverse = (invert) ? 1.0f : -1.0f;
-                tangents[0] = to + new Vector2(y, inverse * ((from.x - to.x) * weight + minTangent)) * cleverness;
-                tangents[1] = from + new Vector2(-y, inverse * ((from.x - to.x) * -weight2 - minTangent)) * cleverness;
-            }
-        }
+			if (orientation == Orientation.Horizontal)
+			{
+				tangents[0] = to + new Vector2((from.x - to.x) * weight + minTangent, y) * cleverness;
+				tangents[1] = from + new Vector2((from.x - to.x) * -weight2 - minTangent, -y) * cleverness;
+			}
+			else
+			{
+				float inverse = (invert) ? 1.0f : -1.0f;
+				tangents[0] = to + new Vector2(y, inverse * ((from.x - to.x) * weight + minTangent)) * cleverness;
+				tangents[1] = from + new Vector2(-y, inverse * ((from.x - to.x) * -weight2 - minTangent)) * cleverness;
+			}
+		}
 
 		public override bool Overlaps(Rect rect)
 		{

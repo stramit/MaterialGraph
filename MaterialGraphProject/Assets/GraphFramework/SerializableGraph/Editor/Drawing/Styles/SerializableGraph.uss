@@ -30,35 +30,35 @@
 
 .Node NodeAnchor {
     height: 26;
-	align-items: center;
+    align-items: center;
 }
 
 .Node NodeAnchor #connector {
-	background-color:#FF0;
-	border-color:#FF0;
-	/* width is currently hard-coded */
-	border-width: 4;
-	margin-left: 5;
+    background-color:#FF0;
+    border-color:#FF0;
+    /* width is currently hard-coded */
+    border-width: 4;
+    margin-left: 5;
     margin-right: 5;
     width: 15;
     height: 15;
 }
 
 .Node NodeAnchor #connector.anchorHighlight {
-	background-color:#00F;
+    background-color:#00F;
 }
 
 .Node #input NodeAnchor {
-	flex-direction: row;
+    flex-direction: row;
 }
 
 .Node #output NodeAnchor {
-	flex-direction: row-reverse;
+    flex-direction: row-reverse;
 }
 
 .Node NodeAnchor #type {
-	text-color: rgb(153, 153, 153);
-	flex:1;
+    text-color: rgb(153, 153, 153);
+    flex:1;
 }
 
 .Node #input NodeAnchor #type {
@@ -70,8 +70,8 @@
 }
 
 .Node #controls {
-	flex-direction: column;
-	padding-bottom: 2;
+    flex-direction: column;
+    padding-bottom: 2;
     padding-left: 4;
 }
 

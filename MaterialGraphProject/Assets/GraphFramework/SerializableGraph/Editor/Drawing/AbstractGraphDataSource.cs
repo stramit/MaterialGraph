@@ -10,7 +10,7 @@ namespace UnityEditor.Graphing.Drawing
     [Serializable]
     public abstract class AbstractGraphDataSource : GraphViewPresenter
     {
-		// TODO JOCE Why this other data mapper? Should probably be using GraphView's own
+        // TODO JOCE Why this other data mapper? Should probably be using GraphView's own
         private readonly Dictionary<Type, Type> m_DataMapper = new Dictionary<Type, Type>();
 
         public IGraphAsset graphAsset { get; private set; }
@@ -217,12 +217,12 @@ namespace UnityEditor.Graphing.Drawing
             }
         }
 
-	    public override void AddElement(EdgePresenter edge)
-	    {
-			Connect(edge.output as AnchorDrawData, edge.input as AnchorDrawData);
-		}
+        public override void AddElement(EdgePresenter edge)
+        {
+            Connect(edge.output as AnchorDrawData, edge.input as AnchorDrawData);
+        }
 
-		public override void AddElement(GraphElementPresenter element)
+        public override void AddElement(GraphElementPresenter element)
         {
             throw new ArgumentException("Not supported on Serializable Graph, data comes from data store");
         }
