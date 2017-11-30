@@ -4,8 +4,8 @@ using UnityEditor.Graphing;
 
 namespace UnityEditor.ShaderGraph
 {
-    [Title("Utility/Heightmap To Normalmap")]
-    public class HeightToNormalNode : AbstractMaterialNode, IGeneratesBodyCode, IMayRequireMeshUV
+    [Title("Artistic/Normal/Normal Create")]
+    public class NormalCreateNode : AbstractMaterialNode, IGeneratesBodyCode, IMayRequireMeshUV
     {
         public const int TextureInput = 0;
         public const int TexCoordInput = 1;
@@ -19,9 +19,9 @@ namespace UnityEditor.ShaderGraph
         const string StrengthInputName = "Strength";
         const string NormalOutputName = "Normal";
 
-        public HeightToNormalNode()
+        public NormalCreateNode()
         {
-            name = "HeightToNormal";
+            name = "Normal Create";
             UpdateNodeAfterDeserialization();
         }
 
