@@ -6,8 +6,6 @@ using UnityEditor.Graphing.Util;
 using UnityEngine;
 using UnityEngine.Experimental.UIElements;
 using UnityEditor.Graphing;
-using UnityEditor.ShaderGraph;
-using UnityEngine.AI;
 
 namespace UnityEditor.ShaderGraph.Drawing.Inspector
 {
@@ -38,7 +36,6 @@ namespace UnityEditor.ShaderGraph.Drawing.Inspector
         PreviewTextureView m_PreviewTextureView;
 
         AbstractMaterialGraph m_Graph;
-        PreviewManager m_PreviewManager;
         MasterNode m_MasterNode;
         PreviewRenderData m_PreviewRenderHandle;
 
@@ -51,7 +48,6 @@ namespace UnityEditor.ShaderGraph.Drawing.Inspector
             persistenceKey = "GraphInspector";
 
             m_Graph = graph;
-            m_PreviewManager = previewManager;
             m_SelectedNodes = new List<INode>();
 
             AddStyleSheetPath("Styles/MaterialGraph");
@@ -153,6 +149,7 @@ namespace UnityEditor.ShaderGraph.Drawing.Inspector
             gm.AddItem(new GUIContent("Vector4"), false, () => AddProperty(new Vector4ShaderProperty()));
             gm.AddItem(new GUIContent("Color"), false, () => AddProperty(new ColorShaderProperty()));
             gm.AddItem(new GUIContent("Texture"), false, () => AddProperty(new TextureShaderProperty()));
+            gm.AddItem(new GUIContent("Cubemap"), false, () => AddProperty(new CubemapShaderProperty()));
             gm.ShowAsContext();
         }
 
