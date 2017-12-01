@@ -12,12 +12,14 @@ namespace UnityEditor.ShaderGraph
     {
         public const int TextureInputId = 0;
         public const int UVInputId = 1;
-        public const int OffsetInputId = 2;
-        public const int StrengthInputId = 3;
-        public const int OutputSlotId = 4;
+        public const int SamplerInputId = 2;
+        public const int OffsetInputId = 3;
+        public const int StrengthInputId = 4;
+        public const int OutputSlotId = 5;
 
         const string kTextureInputName = "Texture";
         const string kUVInputName = "UV";
+        const string kSamplerInputName = "Sampler";
         const string kOffsetInputName = "Offset";
         const string kStrengthInputName = "Strength";
         const string kOutputSlotName = "Out";
@@ -39,16 +41,18 @@ namespace UnityEditor.ShaderGraph
         {
             AddSlot(new Texture2DInputMaterialSlot(TextureInputId, kTextureInputName, kTextureInputName));
             AddSlot(new UVMaterialSlot(UVInputId, kUVInputName, kUVInputName, UVChannel.uv0));
+            AddSlot(new SamplerStateMaterialSlot(SamplerInputId, kSamplerInputName, kSamplerInputName, SlotType.Input));
             AddSlot(new Vector1MaterialSlot(OffsetInputId, kOffsetInputName, kOffsetInputName, SlotType.Input, 0.5f));
             AddSlot(new Vector1MaterialSlot(StrengthInputId, kStrengthInputName, kStrengthInputName, SlotType.Input, 8f));
             AddSlot(new Vector3MaterialSlot(OutputSlotId, kOutputSlotName, kOutputSlotName, SlotType.Output, Vector3.zero));
+            RemoveSlotsNameNotMatching(new[] { TextureInputId, UVInputId, SamplerInputId, OffsetInputId, StrengthInputId, OutputSlotId });
         }
 
         string GetFunctionPrototype(string textureIn, string samplerIn, string uvIn, string offsetIn, string strengthIn, string argOut)
         {
-            return string.Format("void {0} ({1} {2}, SamplerState {3}, {4} {5}, {6} {7}, {8} {9}, out {10} {11})", GetFunctionName(),
+            return string.Format("void {0} ({1} {2}, {3} {4}, {5} {6}, {7} {8}, {9} {10}, out {11} {12})", GetFunctionName(),
                 ConvertConcreteSlotValueTypeToString(precision, FindInputSlot<MaterialSlot>(TextureInputId).concreteValueType), textureIn,
-                samplerIn,
+                ConvertConcreteSlotValueTypeToString(precision, FindInputSlot<MaterialSlot>(SamplerInputId).concreteValueType), samplerIn,
                 ConvertConcreteSlotValueTypeToString(precision, FindInputSlot<MaterialSlot>(UVInputId).concreteValueType), uvIn,
                 ConvertConcreteSlotValueTypeToString(precision, FindInputSlot<MaterialSlot>(OffsetInputId).concreteValueType), offsetIn,
                 ConvertConcreteSlotValueTypeToString(precision, FindInputSlot<MaterialSlot>(StrengthInputId).concreteValueType), strengthIn,
@@ -62,13 +66,23 @@ namespace UnityEditor.ShaderGraph
             string offsetValue = GetSlotValue(OffsetInputId, generationMode);
             string strengthValue = GetSlotValue(StrengthInputId, generationMode);
             string outputValue = GetSlotValue(OutputSlotId, generationMode);
+
+            //Sampler input slot
+            var samplerSlot = FindInputSlot<MaterialSlot>(SamplerInputId);
+            var edgesSampler = owner.GetEdges(samplerSlot.slotReference);
+            string samplerValue;
+            if (edgesSampler.Any())
+                samplerValue = GetSlotValue(SamplerInputId, generationMode);
+            else
+                samplerValue = string.Format("sampler{0}", GetSlotValue(TextureInputId, generationMode));
+
             visitor.AddShaderChunk(string.Format("{0} {1};", ConvertConcreteSlotValueTypeToString(precision, FindOutputSlot<MaterialSlot>(OutputSlotId).concreteValueType), GetVariableNameForSlot(OutputSlotId)), true);
-            visitor.AddShaderChunk(GetFunctionCallBody(textureValue, uvValue, offsetValue, strengthValue, outputValue), true);
+            visitor.AddShaderChunk(GetFunctionCallBody(textureValue, samplerValue, uvValue, offsetValue, strengthValue, outputValue), true);
         }
 
-        string GetFunctionCallBody(string textureValue, string uvValue, string offsetValue, string strengthValue, string outputValue)
+        string GetFunctionCallBody(string textureValue, string samplerValue, string uvValue, string offsetValue, string strengthValue, string outputValue)
         {
-            return GetFunctionName() + " (" + textureValue + ", sampler" + textureValue + ", " + uvValue + ", " + offsetValue + ", " + strengthValue + ", " + outputValue + ");";
+            return GetFunctionName() + " (" + textureValue + ", " + samplerValue + ", " + uvValue + ", " + offsetValue + ", " + strengthValue + ", " + outputValue + ");";
         }
 
         public void GenerateNodeFunction(ShaderGenerator visitor, GenerationMode generationMode)
@@ -87,7 +101,7 @@ namespace UnityEditor.ShaderGraph
 
             visitor.AddShaderChunk(string.Format("{0}3 va = float3(1, 0, (uSample - normalSample) * Strength);", precision), true);
             visitor.AddShaderChunk(string.Format("{0}3 vb = float3(0, 1, (vSample - normalSample) * Strength);", precision), true);
-            visitor.AddShaderChunk("Out = cross(va, vb);", true);
+            visitor.AddShaderChunk("Out = normalize(cross(va, vb));", true);
 
             visitor.Deindent();
             visitor.AddShaderChunk("}", false);
