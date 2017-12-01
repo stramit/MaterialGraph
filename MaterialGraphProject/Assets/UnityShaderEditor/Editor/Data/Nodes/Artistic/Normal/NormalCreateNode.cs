@@ -87,8 +87,8 @@ namespace UnityEditor.ShaderGraph
 
         public void GenerateNodeFunction(ShaderGenerator visitor, GenerationMode generationMode)
         {
-            visitor.AddShaderChunk(GetFunctionPrototype("Texture", "Sampler", "UV", "Offset", "Strength", "Out"), false);
-            visitor.AddShaderChunk("{", false);
+            visitor.AddShaderChunk(GetFunctionPrototype("Texture", "Sampler", "UV", "Offset", "Strength", "Out"), true);
+            visitor.AddShaderChunk("{", true);
             visitor.Indent();
 
             visitor.AddShaderChunk("Offset = pow(Offset, 3) * 0.1;", true);
@@ -104,7 +104,7 @@ namespace UnityEditor.ShaderGraph
             visitor.AddShaderChunk("Out = normalize(cross(va, vb));", true);
 
             visitor.Deindent();
-            visitor.AddShaderChunk("}", false);
+            visitor.AddShaderChunk("}", true);
         }
 
         public bool RequiresMeshUV(UVChannel channel)
