@@ -1,6 +1,8 @@
 using System;
 using UnityEditor.Graphing;
+using UnityEditor.ShaderGraph.Drawing.Slots;
 using UnityEngine;
+using UnityEngine.Experimental.UIElements;
 
 namespace UnityEditor.ShaderGraph
 {
@@ -20,17 +22,22 @@ namespace UnityEditor.ShaderGraph
         {}
 
         protected SpaceMaterialSlot(int slotId, string displayName, string shaderOutputName, CoordinateSpace space,
-                                    ShaderStage shaderStage = ShaderStage.Dynamic, bool hidden = false)
-            : base(slotId, displayName, shaderOutputName, SlotType.Input, Vector3.zero, shaderStage, hidden)
+                                    ShaderStageCapability stageCapability = ShaderStageCapability.All, bool hidden = false)
+            : base(slotId, displayName, shaderOutputName, SlotType.Input, Vector3.zero, stageCapability, hidden)
         {
             this.space = space;
         }
 
         public override void CopyValuesFrom(MaterialSlot foundSlot)
         {
-            var slot = foundSlot as NormalMaterialSlot;
+            var slot = foundSlot as SpaceMaterialSlot;
             if (slot != null)
                 space = slot.space;
+        }
+
+        public override VisualElement InstantiateControl()
+        {
+            return new SpaceSlotControlView(this);
         }
     }
 }

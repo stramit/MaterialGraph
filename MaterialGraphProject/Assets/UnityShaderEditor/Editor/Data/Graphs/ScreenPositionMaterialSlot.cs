@@ -21,9 +21,8 @@ namespace UnityEditor.ShaderGraph
         public ScreenPositionMaterialSlot()
         {}
 
-        public ScreenPositionMaterialSlot(int slotId, string displayName, string shaderOutputName, ScreenSpaceType screenSpaceType,
-                                          ShaderStage shaderStage = ShaderStage.Dynamic, bool hidden = false)
-            : base(slotId, displayName, shaderOutputName, SlotType.Input, Vector3.zero, shaderStage, hidden)
+        public ScreenPositionMaterialSlot(int slotId, string displayName, string shaderOutputName, ScreenSpaceType screenSpaceType, ShaderStageCapability stageCapability = ShaderStageCapability.All, bool hidden = false)
+            : base(slotId, displayName, shaderOutputName, SlotType.Input, Vector3.zero, stageCapability, hidden)
         {
             this.screenSpaceType = screenSpaceType;
         }
