@@ -40,6 +40,28 @@ namespace UnityEditor.ShaderGraph
             }
         }
 
+        string[] m_ColorKeyNameCache;
+        string[] m_AlphaKeyNameCache;
+
+        // Generate color/alpha key property names and cache them. This should
+        // be called lazily because the names can be changed in some points
+        // even after deserialization (e.g. copy-and-paste).
+        void CacheKeyPropertyNames()
+        {
+            if (m_ColorKeyNameCache != null && m_AlphaKeyNameCache != null) return;
+
+            m_ColorKeyNameCache = new string[8];
+            m_AlphaKeyNameCache = new string[8];
+
+            var varName = GetVariableNameForNode();
+
+            for (var i = 0; i < 8; i++)
+            {
+                m_ColorKeyNameCache[i] = varName + "_c" + i;
+                m_AlphaKeyNameCache[i] = varName + "_a" + i;
+            }
+        }
+
         Vector4 KeyToVector(GradientColorKey key)
         {
             var c = key.color;
@@ -164,22 +186,23 @@ namespace UnityEditor.ShaderGraph
 
             if (generationMode != GenerationMode.Preview) return;
 
+            CacheKeyPropertyNames();
+
             var colorKeys = m_Ramp.colorKeys;
             var alphaKeys = m_Ramp.alphaKeys;
-            var name = GetVariableNameForNode();
 
             for (var i = 0; i < 8; i++)
             {
                 properties.AddShaderProperty(new Vector4ShaderProperty()
                 {
-                    overrideReferenceName = name + "_c" + i,
+                    overrideReferenceName = m_ColorKeyNameCache[i],
                     generatePropertyBlock = false,
                     value = KeyToVector(colorKeys[Mathf.Min(i, colorKeys.Length - 1)])
                 });
 
                 properties.AddShaderProperty(new Vector2ShaderProperty()
                 {
-                    overrideReferenceName = name + "_a" + i,
+                    overrideReferenceName = m_AlphaKeyNameCache[i],
                     generatePropertyBlock = false,
                     value = KeyToVector(alphaKeys[Mathf.Min(i, alphaKeys.Length - 1)])
                 });
@@ -190,21 +213,22 @@ namespace UnityEditor.ShaderGraph
         {
             base.CollectPreviewMaterialProperties(properties);
 
+            CacheKeyPropertyNames();
+
             var colorKeys = m_Ramp.colorKeys;
             var alphaKeys = m_Ramp.alphaKeys;
-            var name = GetVariableNameForNode();
 
             for (var i = 0; i < 8; i++)
             {
                 properties.Add(new PreviewProperty(PropertyType.Vector4)
                 {
-                    name = name + "_c" + i,
+                    name = m_ColorKeyNameCache[i],
                     vector4Value = KeyToVector(colorKeys[Mathf.Min(i, colorKeys.Length - 1)])
                 });
 
                 properties.Add(new PreviewProperty(PropertyType.Vector2)
                 {
-                    name = name + "_a" + i,
+                    name = m_AlphaKeyNameCache[i],
                     vector4Value = KeyToVector(alphaKeys[Mathf.Min(i, alphaKeys.Length - 1)])
                 });
             }
