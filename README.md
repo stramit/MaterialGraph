@@ -13,5 +13,6 @@ This repository is under active development. Everything is subject to change.
 
 * Download the beta [here](https://unity3d.com/unity/beta)
 * Clone branch `master`
-* Open contained folder `MaterialGraphProject` as a Unity Project
+* Create a new 2018.1 Beta Project
+* Copy the ShaderGraph directory into the Assets folder of the new project
 * Quickstart guide can be found [here](https://forum.unity.com/threads/feedback-wanted-shader-graph.511960/)
