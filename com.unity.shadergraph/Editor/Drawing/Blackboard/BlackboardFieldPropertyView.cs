@@ -1,8 +1,12 @@
 using System;
+using System.Linq;
 using UnityEditor.Experimental.UIElements;
 using UnityEditor.Graphing;
+using UnityEditor.Graphing.Util;
 using UnityEngine;
 using UnityEngine.Experimental.UIElements;
+using UnityEngine.Experimental.UIElements.StyleSheets;
+using Toggle = UnityEngine.Experimental.UIElements.Toggle;
 
 namespace UnityEditor.ShaderGraph.Drawing
 {
@@ -10,9 +14,31 @@ namespace UnityEditor.ShaderGraph.Drawing
     {
         readonly AbstractMaterialGraph m_Graph;
 
+        IShaderProperty m_Property;
+        TextField m_ReferenceNameField;
+
+        static Type s_ContextualMenuManipulator = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypesOrNothing()).FirstOrDefault(t => t.FullName == "UnityEngine.Experimental.UIElements.ContextualMenuManipulator");
+
         public BlackboardFieldPropertyView(AbstractMaterialGraph graph, IShaderProperty property)
         {
             m_Graph = graph;
+            m_Property = property;
+
+            m_ReferenceNameField = new TextField(30, false, false, ' ');
+            AddRow("Reference name", m_ReferenceNameField);
+            m_ReferenceNameField.value = property.referenceName;
+            m_ReferenceNameField.OnValueChanged(newName =>
+            {
+                string newReferenceName = m_Graph.SanitizePropertyReferenceName(newName.newValue);
+                property.overrideReferenceName = newReferenceName;
+                m_ReferenceNameField.value = newReferenceName;
+                m_ReferenceNameField.style.fontStyle = StyleValue<FontStyle>.Create(FontStyle.Bold);
+                DirtyNodes(ModificationScope.Graph);
+            });
+
+            if (!string.IsNullOrEmpty(property.overrideReferenceName))
+                m_ReferenceNameField.style.fontStyle = StyleValue<FontStyle>.Create(FontStyle.Bold);
+
             if (property is Vector1ShaderProperty)
             {
                 VisualElement floatRow = new VisualElement();
@@ -231,7 +257,21 @@ namespace UnityEditor.ShaderGraph.Drawing
 //            AddRow("Default", new TextField());
 //            AddRow("Tooltip", new TextField());
 
+
             AddToClassList("sgblackboardFieldPropertyView");
+
+            this.AddManipulator((IManipulator)Activator.CreateInstance(s_ContextualMenuManipulator, (Action<ContextualMenuPopulateEvent>)BuildContextualMenu));
+        }
+
+        void BuildContextualMenu(ContextualMenuPopulateEvent evt)
+        {
+            evt.menu.AppendAction("Reset reference name", e =>
+            {
+                m_Property.overrideReferenceName = null;
+                m_ReferenceNameField.value = m_Property.referenceName;
+                m_ReferenceNameField.style.fontStyle = StyleValue<FontStyle>.Create(FontStyle.Normal);
+                DirtyNodes(ModificationScope.Graph);
+            }, ContextualMenu.MenuAction.AlwaysEnabled);
         }
 
         VisualElement AddRow(string labelText, VisualElement control)
@@ -261,10 +301,10 @@ namespace UnityEditor.ShaderGraph.Drawing
             }
         }
 
-        void DirtyNodes()
+        void DirtyNodes(ModificationScope modificationScope = ModificationScope.Node)
         {
             foreach (var node in m_Graph.GetNodes<PropertyNode>())
-                node.Dirty(ModificationScope.Node);
+                node.Dirty(modificationScope);
         }
     }
 }
