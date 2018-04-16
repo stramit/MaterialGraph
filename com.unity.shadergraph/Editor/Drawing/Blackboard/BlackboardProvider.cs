@@ -191,6 +191,7 @@ namespace UnityEditor.ShaderGraph.Drawing
                 m_Graph.owner.RegisterCompleteObjectUndo("Edit Property Name");
                 newText = m_Graph.SanitizePropertyName(newText, property.guid);
                 property.displayName = newText;
+                property.overrideReferenceName = newText;
                 field.text = newText;
                 DirtyNodes();
             }
