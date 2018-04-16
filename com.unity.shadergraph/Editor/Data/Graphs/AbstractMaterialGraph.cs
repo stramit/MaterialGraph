@@ -402,16 +402,16 @@ namespace UnityEditor.ShaderGraph
 
         public string SanitizePropertyName(string displayName, Guid guid = default(Guid))
         {
-            displayName = displayName.Trim();
+            displayName = NodeUtils.GetHLSLSafeName(displayName.Trim());
             if (m_Properties.Any(p => p.displayName == displayName && p.guid != guid))
             {
-                // Strip out the " (n)" part of the name.
-                var baseRegex = new Regex(@"^(.*) \((\d+)\)$");
+                // Strip out the "_n" part of the name.
+                var baseRegex = new Regex(@"^(.*)_(\d+)$");
                 var baseMatch = baseRegex.Match(displayName);
                 if (baseMatch.Success)
                     displayName = baseMatch.Groups[1].Value;
 
-                var regex = new Regex(@"^" + Regex.Escape(displayName) + @" \((\d+)\)$");
+                var regex = new Regex(@"^" + Regex.Escape(displayName) + @"_(\d+)$");
                 var existingDuplicateNumbers = m_Properties.Where(p => p.guid != guid).Select(p => regex.Match(p.displayName)).Where(m => m.Success).Select(m => int.Parse(m.Groups[1].Value)).Where(n => n > 0).Distinct().ToList();
 
                 var duplicateNumber = 1;
@@ -428,7 +428,7 @@ namespace UnityEditor.ShaderGraph
                         }
                     }
                 }
-                displayName = string.Format("{0} ({1})", displayName, duplicateNumber);
+                displayName = string.Format("{0}_{1}", displayName, duplicateNumber);
             }
 
             return displayName;
@@ -667,6 +667,9 @@ namespace UnityEditor.ShaderGraph
         {
             // have to deserialize 'globals' before nodes
             m_Properties = SerializationHelper.Deserialize<IShaderProperty>(m_SerializedProperties, GraphUtil.GetLegacyTypeRemapping());
+            foreach(var prop in m_Properties)
+                prop.overrideReferenceName = NodeUtils.GetHLSLSafeName(prop.displayName);
+
             var nodes = SerializationHelper.Deserialize<INode>(m_SerializableNodes, GraphUtil.GetLegacyTypeRemapping());
             m_Nodes = new List<AbstractMaterialNode>(nodes.Count);
             m_NodeDictionary = new Dictionary<Guid, INode>(nodes.Count);

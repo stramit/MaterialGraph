@@ -132,7 +132,13 @@ namespace UnityEditor.ShaderGraph.Drawing
                 case KeyCode.KeypadEnter:
                     m_TextField.Blur();
                     break;
+                case KeyCode.Backspace:
+                case KeyCode.Delete:
+                case KeyCode.RightArrow:
+                case KeyCode.LeftArrow:
+                    break;
                 default:
+                    if(!Char.IsLetterOrDigit(e.character)) e.PreventDefault();
                     break;
             }
         }
