@@ -138,7 +138,7 @@ namespace UnityEditor.ShaderGraph.Drawing
                 case KeyCode.LeftArrow:
                     break;
                 default:
-                    if(!Char.IsLetterOrDigit(e.character)) e.PreventDefault();
+                    if(!Char.IsLetterOrDigit(e.character) && e.character != '_') e.PreventDefault();
                     break;
             }
         }
