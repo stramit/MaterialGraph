@@ -18,6 +18,8 @@ namespace UnityEditor.ShaderGraph.Drawing.Controls
                 return new EnumControlView(null, node, propertyInfo);
             if (propertyInfo.PropertyType == typeof(Texture2D))
                 return new TextureControlView(null, node, propertyInfo);
+            if (propertyInfo.PropertyType == typeof(Texture2DArray))
+                return new TextureArrayControlView(null, node, propertyInfo);
             if (MultiFloatControlView.validTypes.Contains(propertyInfo.PropertyType))
                 return new MultiFloatControlView(null, "X", "Y", "Z", "W", node, propertyInfo);
             if (typeof(Object).IsAssignableFrom(propertyInfo.PropertyType))

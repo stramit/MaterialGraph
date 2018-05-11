@@ -128,6 +128,8 @@ namespace UnityEditor.ShaderGraph
 
                 if (prop is TextureShaderProperty)
                     arguments.Add(string.Format("TEXTURE2D_PARAM({0}, sampler{0})", GetSlotValue(inSlotId, generationMode)));
+                else if (prop is Texture2DArrayShaderProperty)
+                    arguments.Add(string.Format("TEXTURE2D_ARRAY_PARAM({0}, sampler{0})", GetSlotValue(inSlotId, generationMode)));
                 else if (prop is CubemapShaderProperty)
                     arguments.Add(string.Format("TEXTURECUBE_PARAM({0}, sampler{0})", GetSlotValue(inSlotId, generationMode)));
                 else
@@ -175,6 +177,9 @@ namespace UnityEditor.ShaderGraph
                     case PropertyType.Texture:
                         slotType = SlotValueType.Texture2D;
                         break;
+                    case PropertyType.Texture2DArray:
+                        slotType = SlotValueType.Texture2DArray;
+                        break;
                     case PropertyType.Cubemap:
                         slotType = SlotValueType.Cubemap;
                         break;
@@ -210,6 +215,14 @@ namespace UnityEditor.ShaderGraph
                 {
                     var tSlot = slot as Texture2DInputMaterialSlot;
                     var tProp = prop as TextureShaderProperty;
+                    if (tSlot != null && tProp != null)
+                        tSlot.texture = tProp.value.texture;
+                }
+                // copy default for texture array for niceness
+                if (slotType == SlotValueType.Texture2D && propType == PropertyType.Texture)
+                {
+                    var tSlot = slot as Texture2DInputMaterialSlot;
+                    var tProp = prop as Texture2DArrayShaderProperty;
                     if (tSlot != null && tProp != null)
                         tSlot.texture = tProp.value.texture;
                 }

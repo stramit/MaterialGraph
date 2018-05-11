@@ -89,6 +89,8 @@ namespace UnityEditor.ShaderGraph
                     return "(SS)";
                 case ConcreteSlotValueType.Texture2D:
                     return "(T)";
+                case ConcreteSlotValueType.Texture2DArray:
+                    return "(TA)";
                 case ConcreteSlotValueType.Cubemap:
                     return "(C)";
                 default:
@@ -247,6 +249,8 @@ namespace UnityEditor.ShaderGraph
                         || inputType == SlotValueType.Dynamic;
                 case SlotValueType.Texture2D:
                     return inputType == SlotValueType.Texture2D;
+                case SlotValueType.Texture2DArray:
+                    return inputType == SlotValueType.Texture2DArray;
                 case SlotValueType.Cubemap:
                     return inputType == SlotValueType.Cubemap;
                 case SlotValueType.DynamicVector:
@@ -312,6 +316,8 @@ namespace UnityEditor.ShaderGraph
             {
                 case ConcreteSlotValueType.Texture2D:
                     return PropertyType.Texture;
+                case ConcreteSlotValueType.Texture2DArray:
+                    return PropertyType.Texture2DArray;
                 case ConcreteSlotValueType.Cubemap:
                     return PropertyType.Cubemap;
                 case ConcreteSlotValueType.Boolean:
