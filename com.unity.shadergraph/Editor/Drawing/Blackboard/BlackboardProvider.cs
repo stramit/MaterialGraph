@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.Experimental.UIElements.GraphView;
@@ -76,6 +76,7 @@ namespace UnityEditor.ShaderGraph.Drawing
             gm.AddItem(new GUIContent("Vector4"), false, () => AddProperty(new Vector4ShaderProperty(), true));
             gm.AddItem(new GUIContent("Color"), false, () => AddProperty(new ColorShaderProperty(), true));
             gm.AddItem(new GUIContent("Texture"), false, () => AddProperty(new TextureShaderProperty(), true));
+            gm.AddItem(new GUIContent("Texture Array"), false, () => AddProperty(new Texture2DArrayShaderProperty(), true));
             gm.AddItem(new GUIContent("Cubemap"), false, () => AddProperty(new CubemapShaderProperty(), true));
             gm.AddItem(new GUIContent("Boolean"), false, () => AddProperty(new BooleanShaderProperty(), true));
             gm.ShowAsContext();

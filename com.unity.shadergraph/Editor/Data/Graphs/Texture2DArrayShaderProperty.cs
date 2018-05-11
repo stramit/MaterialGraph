@@ -45,7 +45,7 @@ namespace UnityEditor.ShaderGraph
             result.Append(referenceName);
             result.Append("(\"");
             result.Append(displayName);
-            result.Append("\", 2D) = \"white\" {}");
+            result.Append("\", 2DArray) = \"white\" {}");
             return result.ToString();
         }
 

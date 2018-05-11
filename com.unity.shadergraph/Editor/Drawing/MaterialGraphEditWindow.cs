@@ -313,6 +313,9 @@ namespace UnityEditor.ShaderGraph.Drawing
                     case ConcreteSlotValueType.Texture2D:
                         prop = new TextureShaderProperty();
                         break;
+                    case ConcreteSlotValueType.Texture2DArray:
+                        prop = new Texture2DArrayShaderProperty();
+                        break;
                     case ConcreteSlotValueType.Cubemap:
                         prop = new CubemapShaderProperty();
                         break;

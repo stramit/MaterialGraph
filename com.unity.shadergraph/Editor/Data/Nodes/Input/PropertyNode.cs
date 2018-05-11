@@ -63,6 +63,11 @@ namespace UnityEditor.ShaderGraph
                 AddSlot(new Texture2DMaterialSlot(OutputSlotId, property.displayName, "Out", SlotType.Output));
                 RemoveSlotsNameNotMatching(new[] {OutputSlotId});
             }
+            else if (property is Texture2DArrayShaderProperty)
+            {
+                AddSlot(new Texture2DArrayMaterialSlot(OutputSlotId, property.displayName, "Out", SlotType.Output));
+                RemoveSlotsNameNotMatching(new[] { OutputSlotId });
+            }
             else if (property is CubemapShaderProperty)
             {
                 AddSlot(new CubemapMaterialSlot(OutputSlotId, property.displayName, "Out", SlotType.Output));
