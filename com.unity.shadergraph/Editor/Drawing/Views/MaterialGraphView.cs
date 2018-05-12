@@ -7,10 +7,14 @@ using UnityEngine;
 using UnityEditor.Graphing;
 using UnityEngine.Experimental.UIElements;
 using Edge = UnityEditor.Experimental.UIElements.GraphView.Edge;
+using Node = UnityEditor.Experimental.UIElements.GraphView.Node;
+#if !UNITY_2018_1
+using UnityEditor.Graphs;
+#endif
 
 namespace UnityEditor.ShaderGraph.Drawing
 {
-    public sealed class MaterialGraphView : GraphView, IDropTarget
+    public sealed class MaterialGraphView : GraphView
     {
         public MaterialGraphView()
         {
@@ -19,6 +23,13 @@ namespace UnityEditor.ShaderGraph.Drawing
             canPasteSerializedData = CanPasteSerializedDataImplementation;
             unserializeAndPaste = UnserializeAndPasteImplementation;
             deleteSelection = DeleteSelectionImplementation;
+            RegisterCallback<DragUpdatedEvent>(OnDragUpdatedEvent);
+            RegisterCallback<DragPerformEvent>(OnDragPerformEvent);
+        }
+
+        protected override bool canCopySelection
+        {
+            get { return selection.OfType<Node>().Any() || selection.OfType<GroupNode>().Any() || selection.OfType<BlackboardField>().Any(); }
         }
 
         public MaterialGraphView(AbstractMaterialGraph graph) : this()
@@ -201,38 +212,17 @@ namespace UnityEditor.ShaderGraph.Drawing
             onConvertToSubgraphClick();
         }
 
-        public delegate void OnSelectionChanged(IEnumerable<INode> nodes);
-
-        public OnSelectionChanged onSelectionChanged;
-
-        void SelectionChanged()
-        {
-            var selectedNodes = selection.OfType<MaterialNodeView>().Where(x => x.userData is INode);
-            if (onSelectionChanged != null)
-                onSelectionChanged(selectedNodes.Select(x => x.userData as INode));
-        }
-
-        public override void AddToSelection(ISelectable selectable)
-        {
-            base.AddToSelection(selectable);
-            SelectionChanged();
-        }
-
-        public override void RemoveFromSelection(ISelectable selectable)
-        {
-            base.RemoveFromSelection(selectable);
-            SelectionChanged();
-        }
-
-        public override void ClearSelection()
-        {
-            base.ClearSelection();
-            SelectionChanged();
-        }
-
         string SerializeGraphElementsImplementation(IEnumerable<GraphElement> elements)
         {
-            var graph = new CopyPasteGraph(elements.OfType<MaterialNodeView>().Select(x => (INode)x.node), elements.OfType<Edge>().Select(x => x.userData).OfType<IEdge>());
+            var nodes = elements.OfType<MaterialNodeView>().Select(x => (INode)x.node);
+            var edges = elements.OfType<Edge>().Select(x => x.userData).OfType<IEdge>();
+            var properties = selection.OfType<BlackboardField>().Select(x => x.userData as IShaderProperty);
+
+            // Collect the property nodes and get the corresponding properties
+            var propertyNodeGuids = nodes.OfType<PropertyNode>().Select(x => x.propertyGuid);
+            var metaProperties = this.graph.properties.Where(x => propertyNodeGuids.Contains(x.guid));
+
+            var graph = new CopyPasteGraph(this.graph.guid, nodes, edges, properties, metaProperties);
             return JsonUtility.ToJson(graph, true);
         }
 
@@ -277,43 +267,52 @@ namespace UnityEditor.ShaderGraph.Drawing
             selection.Clear();
         }
 
-        public bool CanAcceptDrop(List<ISelectable> selection)
+        #region Drag and drop
+
+        static void OnDragUpdatedEvent(DragUpdatedEvent e)
         {
-            return selection.OfType<BlackboardField>().Any();
+            var selection = DragAndDrop.GetGenericData("DragSelection") as List<ISelectable>;
+
+            if (selection != null && (selection.OfType<BlackboardField>().Any() ))
+            {
+                DragAndDrop.visualMode = e.ctrlKey ? DragAndDropVisualMode.Copy : DragAndDropVisualMode.Move;
+            }
         }
 
-#if UNITY_2018_1
-        public EventPropagation DragUpdated(IMGUIEvent evt, IEnumerable<ISelectable> selection, IDropTarget dropTarget)
+        void OnDragPerformEvent(DragPerformEvent e)
         {
-            return EventPropagation.Continue;
+            var selection = DragAndDrop.GetGenericData("DragSelection") as List<ISelectable>;
+            if (selection == null)
+                return;
+
+            IEnumerable<BlackboardField> fields = selection.OfType<BlackboardField>();
+            if (!fields.Any())
+                return;
+
+            Vector2 localPos = (e.currentTarget as VisualElement).ChangeCoordinatesTo(contentViewContainer, e.localMousePosition);
+
+            foreach (BlackboardField field in fields)
+            {
+                IShaderProperty property = field.userData as IShaderProperty;
+                if (property == null)
+                    continue;
+
+                var node = new PropertyNode();
+
+                var drawState = node.drawState;
+                var position = drawState.position;
+                position.x = localPos.x;
+                position.y = localPos.y;
+                drawState.position = position;
+                node.drawState = drawState;
+
+                graph.owner.RegisterCompleteObjectUndo("Added Property");
+                graph.AddNode(node);
+                node.propertyGuid = property.guid;
+            }
         }
 
-        public EventPropagation DragPerform(IMGUIEvent evt, IEnumerable<ISelectable> selection, IDropTarget dropTarget)
-        {
-            return EventPropagation.Continue;
-        }
-
-        public EventPropagation DragExited()
-        {
-            return EventPropagation.Continue;
-        }
-#else
-        public bool DragUpdated(DragUpdatedEvent evt, IEnumerable<ISelectable> selection, IDropTarget dropTarget)
-        {
-            return true;
-        }
-
-        public bool DragPerform(DragPerformEvent evt, IEnumerable<ISelectable> selection, IDropTarget dropTarget)
-        {
-            return true;
-        }
-
-        bool IDropTarget.DragExited()
-        {
-            return true;
-        }
-#endif
-
+        #endregion
     }
 
     public static class GraphViewExtensions
@@ -323,26 +322,72 @@ namespace UnityEditor.ShaderGraph.Drawing
             if (copyGraph == null)
                 return;
 
+            // Make new properties from the copied graph
+            foreach (IShaderProperty property in copyGraph.properties)
+            {
+                string propertyName = graphView.graph.SanitizePropertyName(property.displayName);
+                IShaderProperty copiedProperty = property.Copy();
+                copiedProperty.displayName = propertyName;
+                graphView.graph.AddShaderProperty(copiedProperty);
+
+                // Update the property nodes that depends on the copied node
+                var dependentPropertyNodes = copyGraph.GetNodes<PropertyNode>().Where(x => x.propertyGuid == property.guid);
+                foreach (var node in dependentPropertyNodes)
+                {
+                    node.owner = graphView.graph;
+                    node.propertyGuid = copiedProperty.guid;
+                }
+            }
+
             using (var remappedNodesDisposable = ListPool<INode>.GetDisposable())
+            {
                 using (var remappedEdgesDisposable = ListPool<IEdge>.GetDisposable())
                 {
                     var remappedNodes = remappedNodesDisposable.value;
                     var remappedEdges = remappedEdgesDisposable.value;
                     graphView.graph.PasteGraph(copyGraph, remappedNodes, remappedEdges);
 
+                    if (graphView.graph.guid != copyGraph.sourceGraphGuid)
+                    {
+                        // Compute the mean of the copied nodes.
+                        Vector2 centroid = Vector2.zero;
+                        var count = 1;
+                        foreach (var node in remappedNodes)
+                        {
+                            var position = node.drawState.position.position;
+                            centroid = centroid + (position - centroid) / count;
+                            ++count;
+                        }
+
+                        // Get the center of the current view
+                        var viewCenter = graphView.contentViewContainer.WorldToLocal(graphView.layout.center);
+
+                        foreach (var node in remappedNodes)
+                        {
+                            var drawState = node.drawState;
+                            var positionRect = drawState.position;
+                            var position = positionRect.position;
+                            position += viewCenter - centroid;
+                            positionRect.position = position;
+                            drawState.position = positionRect;
+                            node.drawState = drawState;
+                        }
+                    }
+
                     // Add new elements to selection
                     graphView.ClearSelection();
                     graphView.graphElements.ForEach(element =>
-                        {
-                            var edge = element as Edge;
-                            if (edge != null && remappedEdges.Contains(edge.userData as IEdge))
-                                graphView.AddToSelection(edge);
+                    {
+                        var edge = element as Edge;
+                        if (edge != null && remappedEdges.Contains(edge.userData as IEdge))
+                            graphView.AddToSelection(edge);
 
-                            var nodeView = element as MaterialNodeView;
-                            if (nodeView != null && remappedNodes.Contains(nodeView.node))
-                                graphView.AddToSelection(nodeView);
-                        });
+                        var nodeView = element as MaterialNodeView;
+                        if (nodeView != null && remappedNodes.Contains(nodeView.node))
+                            graphView.AddToSelection(nodeView);
+                    });
                 }
+            }
         }
     }
 }

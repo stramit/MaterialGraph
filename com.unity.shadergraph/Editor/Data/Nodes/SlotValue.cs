@@ -14,6 +14,7 @@ namespace UnityEditor.ShaderGraph
         Texture2D,
         Texture2DArray,
         Cubemap,
+        Gradient,
         DynamicVector,
         Vector4,
         Vector3,
@@ -32,6 +33,7 @@ namespace UnityEditor.ShaderGraph
         Texture2D,
         Texture2DArray,
         Cubemap,
+        Gradient,
         Vector4,
         Vector3,
         Vector2,
@@ -41,7 +43,7 @@ namespace UnityEditor.ShaderGraph
 
     public static class SlotValueHelper
     {
-        public static int GetChannelCount(ConcreteSlotValueType type)
+        public static int GetChannelCount(this ConcreteSlotValueType type)
         {
             switch (type)
             {
@@ -95,6 +97,7 @@ namespace UnityEditor.ShaderGraph
             "typeTexture2D",
             "typeTexture2DArray",
             "typeCubemap",
+            "typeGradient",
             "typeFloat4",
             "typeFloat3",
             "typeFloat2",

@@ -6,6 +6,7 @@ namespace UnityEditor.ShaderGraph
         Texture,
         Texture2DArray,
         Cubemap,
+        Gradient,
         Boolean,
         Vector1,
         Vector2,

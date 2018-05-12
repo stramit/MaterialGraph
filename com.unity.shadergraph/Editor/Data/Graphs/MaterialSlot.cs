@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -93,6 +94,8 @@ namespace UnityEditor.ShaderGraph
                     return "(TA)";
                 case ConcreteSlotValueType.Cubemap:
                     return "(C)";
+                case ConcreteSlotValueType.Gradient:
+                    return "(G)";
                 default:
                     return "(E)";
             }
@@ -131,16 +134,20 @@ namespace UnityEditor.ShaderGraph
                     return slotType == SlotType.Input
                         ? new CubemapInputMaterialSlot(slotId, displayName, shaderOutputName, shaderStage, hidden)
                         : new CubemapMaterialSlot(slotId, displayName, shaderOutputName, slotType, shaderStage, hidden);
+                case SlotValueType.Gradient:
+                    return slotType == SlotType.Input
+                        ? new GradientInputMaterialSlot(slotId, displayName, shaderOutputName, shaderStage, hidden)
+                        : new GradientMaterialSlot(slotId, displayName, shaderOutputName, slotType, shaderStage, hidden);
                 case SlotValueType.DynamicVector:
                     return new DynamicVectorMaterialSlot(slotId, displayName, shaderOutputName, slotType, defaultValue, shaderStage, hidden);
                 case SlotValueType.Vector4:
-                    return new Vector4MaterialSlot(slotId, displayName, shaderOutputName, slotType, defaultValue, shaderStage, hidden);
+                    return new Vector4MaterialSlot(slotId, displayName, shaderOutputName, slotType, defaultValue, shaderStage, hidden: hidden);
                 case SlotValueType.Vector3:
-                    return new Vector3MaterialSlot(slotId, displayName, shaderOutputName, slotType, defaultValue, shaderStage, hidden);
+                    return new Vector3MaterialSlot(slotId, displayName, shaderOutputName, slotType, defaultValue, shaderStage, hidden: hidden);
                 case SlotValueType.Vector2:
-                    return new Vector2MaterialSlot(slotId, displayName, shaderOutputName, slotType, defaultValue, shaderStage, hidden);
+                    return new Vector2MaterialSlot(slotId, displayName, shaderOutputName, slotType, defaultValue, shaderStage, hidden: hidden);
                 case SlotValueType.Vector1:
-                    return new Vector1MaterialSlot(slotId, displayName, shaderOutputName, slotType, defaultValue.x, shaderStage, hidden);
+                    return new Vector1MaterialSlot(slotId, displayName, shaderOutputName, slotType, defaultValue.x, shaderStage, hidden: hidden);
                 case SlotValueType.Dynamic:
                     return new DynamicValueMaterialSlot(slotId, displayName, shaderOutputName, slotType, new Matrix4x4(defaultValue, Vector4.zero, Vector4.zero, Vector4.zero), shaderStage, hidden);
                 case SlotValueType.Boolean:
@@ -253,6 +260,8 @@ namespace UnityEditor.ShaderGraph
                     return inputType == SlotValueType.Texture2DArray;
                 case SlotValueType.Cubemap:
                     return inputType == SlotValueType.Cubemap;
+                case SlotValueType.Gradient:
+                    return inputType == SlotValueType.Gradient;
                 case SlotValueType.DynamicVector:
                 case SlotValueType.Vector4:
                 case SlotValueType.Vector3:
@@ -320,6 +329,8 @@ namespace UnityEditor.ShaderGraph
                     return PropertyType.Texture2DArray;
                 case ConcreteSlotValueType.Cubemap:
                     return PropertyType.Cubemap;
+                case ConcreteSlotValueType.Gradient:
+                    return PropertyType.Gradient;
                 case ConcreteSlotValueType.Boolean:
                     return PropertyType.Boolean;
                 case ConcreteSlotValueType.Vector1:
@@ -343,9 +354,9 @@ namespace UnityEditor.ShaderGraph
             }
         }
 
-        public virtual PreviewProperty GetPreviewProperty(string name)
+        public virtual void GetPreviewProperties(List<PreviewProperty> properties, string name)
         {
-            return default(PreviewProperty);
+            properties.Add(default(PreviewProperty));
         }
 
         public abstract void CopyValuesFrom(MaterialSlot foundSlot);
