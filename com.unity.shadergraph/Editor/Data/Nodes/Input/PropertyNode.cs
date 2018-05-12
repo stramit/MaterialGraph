@@ -162,7 +162,7 @@ namespace UnityEditor.ShaderGraph
             var graph = owner as AbstractMaterialGraph;
             var property = graph.properties.FirstOrDefault(x => x.guid == propertyGuid);
 
-            if (!(property is TextureShaderProperty) && !(property is CubemapShaderProperty))
+            if (!(property is TextureShaderProperty) && !(property is CubemapShaderProperty) && !(property is Texture2DArrayShaderProperty))
                 return base.GetVariableNameForSlot(slotId);
 
             return property.referenceName;
