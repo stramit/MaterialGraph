@@ -26,7 +26,11 @@ Enables the user to change the path of Shader Graphs and Sub Graphs. Changing th
 
 This adds gradient functionality via two new nodes. Sample Gradient node samples a gradient given a Time parameter. This gradient can be defined on the Gradient slot control view. The Gradient Asset node defines a gradient that can be sampled by multiple Sample Gradient nodes using different Time parameters.
 
+### Texture2DArray nodes.
 
+![](.data/texture_array_node.png)
+
+This adds a texture array asset node, and a texture array sampler node. The sampler node takes an index parameter to pick which texture in the array to access.
 
 
 ### Bug fixes and minor changes
