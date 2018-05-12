@@ -227,7 +227,7 @@ namespace UnityEditor.ShaderGraph
                     var tSlot = slot as Texture2DInputMaterialSlot;
                     var tProp = prop as Texture2DArrayShaderProperty;
                     if (tSlot != null && tProp != null)
-                        tSlot.texture = tProp.value.texture;
+                        tSlot.texture = tProp.value.textureArray;
                 }
                 // copy default for cubemap for niceness
                 else if (slotType == SlotValueType.Cubemap && propType == PropertyType.Cubemap)

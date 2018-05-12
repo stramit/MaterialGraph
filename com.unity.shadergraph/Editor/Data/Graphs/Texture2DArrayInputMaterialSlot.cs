@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEditor.Graphing;
 using UnityEditor.ShaderGraph.Drawing.Slots;
 using UnityEngine;
@@ -10,12 +11,12 @@ namespace UnityEditor.ShaderGraph
     public class Texture2DArrayInputMaterialSlot : Texture2DArrayMaterialSlot
     {
         [SerializeField]
-        private SerializableTextureArray m_Texture = new SerializableTextureArray();
+        private SerializableTextureArray m_TextureArray = new SerializableTextureArray();
 
-        public Texture2DArray texture
+        public Texture2DArray textureArray
         {
-            get { return m_Texture.texture; }
-            set { m_Texture.texture = value; }
+            get { return m_TextureArray.textureArray; }
+            set { m_TextureArray.textureArray = value; }
         }
 
         public Texture2DArrayInputMaterialSlot()
@@ -54,25 +55,25 @@ namespace UnityEditor.ShaderGraph
             prop.overrideReferenceName = matOwner.GetVariableNameForSlot(id);
             prop.modifiable = false;
             prop.generatePropertyBlock = true;
-            prop.value.texture = texture;
+            prop.value.textureArray = textureArray;
             properties.AddShaderProperty(prop);
         }
 
-        public override PreviewProperty GetPreviewProperty(string name)
+        public override void GetPreviewProperties(List<PreviewProperty> properties, string name)
         {
-            var pp = new PreviewProperty(PropertyType.Texture)
+            var pp = new PreviewProperty(PropertyType.Texture2DArray)
             {
                 name = name,
-                textureValue = texture
+                textureValue = textureArray,
             };
-            return pp;
+            properties.Add(pp);
         }
 
         public override void CopyValuesFrom(MaterialSlot foundSlot)
         {
             var slot = foundSlot as Texture2DArrayInputMaterialSlot;
             if (slot != null)
-                m_Texture = slot.m_Texture;
+                m_TextureArray = slot.m_TextureArray;
         }
     }
 }

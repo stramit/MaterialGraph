@@ -35,12 +35,12 @@ namespace UnityEditor.ShaderGraph
         [TextureArrayControl("")]
         public Texture2DArray texture
         {
-            get { return m_Texture.texture; }
+            get { return m_Texture.textureArray; }
             set
             {
-                if (m_Texture.texture == value)
+                if (m_Texture.textureArray == value)
                     return;
-                m_Texture.texture = value;
+                m_Texture.textureArray = value;
                 Dirty(ModificationScope.Node);
             }
         }

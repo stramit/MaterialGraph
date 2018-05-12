@@ -64,13 +64,13 @@ namespace UnityEditor.ShaderGraph
             return new PreviewProperty(PropertyType.Texture)
             {
                 name = referenceName,
-                textureValue = value.texture
+                textureValue = value.textureArray
             };
         }
 
         public override INode ToConcreteNode()
         {
-            return new Texture2DAssetNode { texture = value.texture };
+            return new Texture2DAssetNode { texture = value.textureArray };
         }
     }
 }

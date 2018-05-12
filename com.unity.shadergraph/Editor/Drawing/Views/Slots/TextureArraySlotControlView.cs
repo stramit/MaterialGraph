@@ -15,18 +15,18 @@ namespace UnityEditor.ShaderGraph.Drawing.Slots
         {
             m_Slot = slot;
             AddStyleSheetPath("Styles/Controls/TextureArraySlotControlView");
-            var objectField = new ObjectField { objectType = typeof(Texture2DArray), value = m_Slot.texture };
+            var objectField = new ObjectField { objectType = typeof(Texture2DArray), value = m_Slot.textureArray };
             objectField.OnValueChanged(OnValueChanged);
             Add(objectField);
         }
 
         void OnValueChanged(ChangeEvent<Object> evt)
         {
-            var texture = evt.newValue as Texture2DArray;
-            if (texture != m_Slot.texture)
+            var textureArray = evt.newValue as Texture2DArray;
+            if (textureArray != m_Slot.textureArray)
             {
                 m_Slot.owner.owner.owner.RegisterCompleteObjectUndo("Change Texture Array");
-                m_Slot.texture = texture;
+                m_Slot.textureArray = textureArray;
                 m_Slot.owner.Dirty(ModificationScope.Node);
             }
         }
