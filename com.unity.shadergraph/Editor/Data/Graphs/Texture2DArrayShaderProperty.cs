@@ -72,5 +72,13 @@ namespace UnityEditor.ShaderGraph
         {
             return new Texture2DAssetNode { texture = value.textureArray };
         }
+
+        public override IShaderProperty Copy()
+        {
+            var copied = new Texture2DArrayShaderProperty();
+            copied.displayName = displayName;
+            copied.value = value;
+            return copied;
+        }
     }
 }
