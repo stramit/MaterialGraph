@@ -248,6 +248,17 @@ namespace UnityEditor.ShaderGraph.Drawing
                 });
                 AddRow("Default", field);
             }
+            else if (property is Texture2DArrayShaderProperty)
+            {
+                var textureArrayProperty = (Texture2DArrayShaderProperty)property;
+                var field = new ObjectField { value = textureArrayProperty.value.textureArray, objectType = typeof(Texture2DArray) };
+                field.OnValueChanged(evt =>
+                {
+                    textureArrayProperty.value.textureArray = (Texture2DArray)evt.newValue;
+                    DirtyNodes();
+                });
+                AddRow("Default", field);
+            }
             else if (property is CubemapShaderProperty)
             {
                 var cubemapProperty = (CubemapShaderProperty)property;
